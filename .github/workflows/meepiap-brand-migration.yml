@@ -18,7 +18,7 @@ jobs:
           ref: meepiap-discovery-v1
           fetch-depth: 0
 
-      - name: Replace legacy brand references
+      - name: Apply final brand and UI wiring
         run: |
           python3 - <<'PY'
           from pathlib import Path
@@ -45,6 +45,14 @@ jobs:
                   new = new.replace(old, repl)
               if new != text:
                   path.write_text(new, encoding='utf-8')
+
+          # Wire the dedicated Wow UI layer after the page's inline Discovery styles.
+          home = Path('public/index.html')
+          text = home.read_text(encoding='utf-8')
+          wow_link = '  <link rel="stylesheet" href="/assets/meepiap-wow.css">\n'
+          if '/assets/meepiap-wow.css' not in text:
+              text = text.replace('  <script type="application/ld+json">', wow_link + '  <script type="application/ld+json">', 1)
+          home.write_text(text, encoding='utf-8')
 
           wrangler = Path('wrangler.jsonc')
           text = wrangler.read_text(encoding='utf-8')
@@ -75,12 +83,14 @@ jobs:
           worker.write_text(text, encoding='utf-8')
           PY
 
-      - name: Brand audit
+      - name: Brand and UI audit
         run: |
           if grep -RIn --exclude-dir=.git --exclude=meepiap-brand-migration.yml -E 'OHOPIAP|Ohopiap|ohopiap|โอ้โหเพียบ|<span>OHO</span>PIAP|ฐานคุ้มไหม\?' .; then
             echo 'Legacy brand references remain.'
             exit 1
           fi
+          grep -q '/assets/meepiap-wow.css' public/index.html
+          test -s public/assets/meepiap-wow.css
           grep -RIn --exclude-dir=.git -E 'MEEPIAP|มีเพียบ' public README*.md README*.txt package.json wrangler.jsonc | head -100
 
       - name: Syntax checks
@@ -99,5 +109,5 @@ jobs:
             echo "No migration changes needed"
             exit 0
           fi
-          git commit -m "Finish MEEPIAP brand cleanup"
+          git commit -m "Wire MEEPIAP Wow UI and finish brand migration"
           git push origin HEAD:meepiap-discovery-v1
