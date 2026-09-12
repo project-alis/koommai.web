@@ -22,22 +22,20 @@ jobs:
         run: |
           python3 - <<'PY'
           from pathlib import Path
+          import re
           path = Path('worker/index.js')
           text = path.read_text(encoding='utf-8')
-          old = """  const lat = Number(url.searchParams.get('lat'));
-          const lng = Number(url.searchParams.get('lng'));
-          const hasLocation = Number.isFinite(lat) && Number.isFinite(lng);
-          """
-          new = """  const latRaw = url.searchParams.get('lat');
+          pattern = r"const lat = Number\(url\.searchParams\.get\('lat'\)\);\s*const lng = Number\(url\.searchParams\.get\('lng'\)\);\s*const hasLocation = Number\.isFinite\(lat\) && Number\.isFinite\(lng\);"
+          replacement = """const latRaw = url.searchParams.get('lat');
           const lngRaw = url.searchParams.get('lng');
           const lat = latRaw === null ? Number.NaN : Number(latRaw);
           const lng = lngRaw === null ? Number.NaN : Number(lngRaw);
           const hasLocation = Number.isFinite(lat) && Number.isFinite(lng) &&
-            lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-          """
-          if old not in text:
-              raise SystemExit('Expected coordinate block not found')
-          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+            lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;"""
+          updated, count = re.subn(pattern, replacement, text, count=1)
+          if count != 1:
+              raise SystemExit(f'Expected one coordinate block, found {count}')
+          path.write_text(updated, encoding='utf-8')
           PY
 
       - name: Validate
