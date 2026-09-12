@@ -1,8 +1,10 @@
 const INDEXABLE_PATHS = [
   '/',
+  '/tools/',
   '/tools/profit-online/',
   '/tools/promo-check/',
   '/tools/unit-price/',
+  '/guides/',
   '/guides/discount-15-max-100/',
   '/guides/compare-unit-price/',
   '/guides/online-selling-profit/',

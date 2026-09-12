@@ -6,9 +6,13 @@ async function loadRecommendations(tool){
   try{
     const r=await fetch(`/api/recommendations?tool=${encodeURIComponent(tool)}`);
     const d=await r.json();
-    if(!d.items?.length){ box.hidden=true; return; }
+    if(!d.items?.length){
+      box.hidden=false;
+      box.innerHTML=`<div class="empty-products"><strong>ระบบแนะนำสินค้าอัตโนมัติพร้อมแล้ว</strong><div>ตอนนี้ยังไม่ได้ใส่ลิงก์ Affiliate จริง เมื่อเพิ่มสินค้าใน D1 ระบบจะสร้างรูป ชื่อ ราคา ข้อความ และปุ่มซื้อให้ตรงนี้อัตโนมัติ</div><div class="demo-row"><div class="demo-product"><div class="demo-thumb">🛍️</div><b>สินค้าแนะนำ</b><span>รูป + ชื่อ + ราคา</span></div><div class="demo-product"><div class="demo-thumb">✨</div><b>ข้อความอัตโนมัติ</b><span>เลือกตามเครื่องมือ</span></div><div class="demo-product"><div class="demo-thumb">🔗</div><b>Affiliate</b><span>กดแล้ว Track click</span></div></div></div>`;
+      return;
+    }
     box.hidden=false;
-    box.innerHTML=`<div class="rec-head"><div><span class="eyebrow">ตัวเลือกที่เกี่ยวข้อง</span><h2>ระบบเลือกสินค้าให้จากหมวดนี้</h2></div><p>รูป ข้อความ และปุ่มซื้อถูกสร้างอัตโนมัติจากข้อมูลสินค้าใน D1</p></div><div class="rec-grid">${d.items.map(x=>{
+    box.innerHTML=`<div class="rec-head"><div><span class="eyebrow">ตัวเลือกที่เกี่ยวข้อง</span><h2>ตัวเลือกที่ระบบคัดไว้ให้</h2></div><p>รูป ชื่อ ราคา และคำแนะนำสร้างจากข้อมูลสินค้าในระบบอัตโนมัติ</p></div><div class="rec-grid">${d.items.map(x=>{
       const img=x.image_url||'/assets/product-placeholder.svg';
       return `<article class="rec product-card">
         <div class="product-media"><img src="${escapeAttr(img)}" alt="${escapeAttr(x.image_alt||x.name)}" loading="lazy" decoding="async" width="640" height="480" data-fallback="1"></div>

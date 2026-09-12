@@ -34,7 +34,7 @@ Free quota ของ Cloudflare เป็นระดับ account จึงแ
 npx wrangler d1 create koommai-db
 ```
 
-คัดลอก `database_id` ที่ Cloudflare ให้มา แล้วแทน `REPLACE_AFTER_CREATE` ใน `wrangler.jsonc`
+D1 นี้ตั้งค่าไว้แล้ว: `e629bb4c-0c0b-4e94-bba3-5032b3046114` ใน `wrangler.jsonc`
 
 ### 2) ติดตั้ง
 ```bash
@@ -147,3 +147,17 @@ wrangler.jsonc
 
 ## Phase ถัดไป
 หลังสมัคร Shopee Affiliate และตรวจสิทธิ์ API ของบัญชีจริงแล้ว ค่อยเพิ่มโมดูลนำเข้าข้อมูลสินค้า/รูป/ราคาอัตโนมัติ โดยไม่ต้องเปลี่ยน UI การ์ดสินค้า เพราะ V1.2 เตรียมโครงสร้างไว้รองรับแล้ว
+
+
+## V1.3 additions
+- UI compact/mobile-first
+- `/tools/` and `/guides/` SEO hubs
+- recommendation placeholder preview when D1 has no active Affiliate products
+- `examples/affiliate-products-template.sql` for adding real products later
+
+## Google Search Console after deploy
+1. Add the live `workers.dev` URL as a URL-prefix property.
+2. Verify ownership using the method Google offers for that property.
+3. Submit `/sitemap.xml`.
+4. Request indexing for `/`, `/tools/promo-check/`, `/tools/profit-online/`, `/tools/unit-price/`.
+5. Wait for real query/impression data before choosing the next content pages.
