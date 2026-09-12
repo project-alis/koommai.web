@@ -1,0 +1,32 @@
+name: MEEPIAP live check
+
+on:
+  push:
+    branches:
+      - meepiap-v1-final
+
+permissions:
+  contents: read
+
+jobs:
+  live-check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: DNS
+        run: |
+          echo '=== DNS apex ==='
+          getent ahosts meepiap.com || true
+          echo '=== DNS www ==='
+          getent ahosts www.meepiap.com || true
+      - name: HTTPS apex
+        run: |
+          echo '=== HEAD apex ==='
+          curl -sSIL --max-time 20 https://meepiap.com/ || true
+          echo '=== BODY markers ==='
+          curl -sSL --max-time 20 https://meepiap.com/ | grep -E -m5 'MEEPIAP|OHOPIAP|ค้นทีเดียว|เจอเพียบ' || true
+      - name: HTTPS www and health
+        run: |
+          echo '=== WWW ==='
+          curl -sSIL --max-time 20 https://www.meepiap.com/ || true
+          echo '=== HEALTH ==='
+          curl -sS --max-time 20 https://meepiap.com/api/health || true
