@@ -1,0 +1,55 @@
+name: Fix MEEPIAP location parsing
+
+on:
+  push:
+    branches:
+      - meepiap-discovery-v1
+
+permissions:
+  contents: write
+
+jobs:
+  fix-location:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: meepiap-discovery-v1
+          fetch-depth: 0
+
+      - name: Fix missing coordinate handling
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          path = Path('worker/index.js')
+          text = path.read_text(encoding='utf-8')
+          old = """  const lat = Number(url.searchParams.get('lat'));
+          const lng = Number(url.searchParams.get('lng'));
+          const hasLocation = Number.isFinite(lat) && Number.isFinite(lng);
+          """
+          new = """  const latRaw = url.searchParams.get('lat');
+          const lngRaw = url.searchParams.get('lng');
+          const lat = latRaw === null ? Number.NaN : Number(latRaw);
+          const lng = lngRaw === null ? Number.NaN : Number(lngRaw);
+          const hasLocation = Number.isFinite(lat) && Number.isFinite(lng) &&
+            lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+          """
+          if old not in text:
+              raise SystemExit('Expected coordinate block not found')
+          path.write_text(text.replace(old, new, 1), encoding='utf-8')
+          PY
+
+      - name: Validate
+        run: |
+          node --check worker/index.js
+          grep -q "latRaw === null" worker/index.js
+          grep -q "lat >= -90" worker/index.js
+
+      - name: Commit fix
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add worker/index.js
+          git commit -m "Fix near-me detection when coordinates are absent"
+          git push origin HEAD:meepiap-discovery-v1
