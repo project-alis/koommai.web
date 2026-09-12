@@ -11,6 +11,30 @@
   <meta property="og:title" content="OHOPIAP — ราคานี้…คุ้มไหม? เช็กก่อนซื้อ รู้ก่อนจ่าย">
   <meta property="og:description" content="โอ้โหเพียบกับเครื่องมือช่วยเช็กก่อนซื้อ ค้นหาสินค้าหรือวางลิงก์ Shopee แล้วดูง่าย ๆ ว่า ซื้อเลย หรือ รอก่อน พร้อมเครื่องมือช่วยคิดความคุ้ม">
   <link rel="stylesheet" href="/assets/style.css">
+  <style>
+    /* Mobile product feed: stack cards vertically instead of horizontal carousel */
+    @media (max-width:780px){
+      .v17-hot-grid{
+        display:grid;
+        grid-template-columns:1fr;
+        overflow-x:visible;
+        scroll-snap-type:none;
+        gap:14px;
+        padding-bottom:0;
+        margin-right:0;
+        padding-right:0;
+      }
+      .v17-home .deal-card{
+        width:100%;
+        max-width:none;
+        flex:none;
+        scroll-snap-align:none;
+      }
+    }
+    @media (max-width:430px){
+      .v17-home .deal-card{flex-basis:auto}
+    }
+  </style>
   <link rel="icon" href="/assets/favicon.svg">
   <link rel="manifest" href="/site.webmanifest">
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"OHOPIAP","alternateName":"โอ้โหเพียบ","inLanguage":"th","description":"ผู้ช่วยเช็กความคุ้มก่อนซื้อ ก่อนขาย และก่อนจ่ายเงิน"}</script>
