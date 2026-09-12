@@ -1,0 +1,47 @@
+name: Fix MEEPIAP near-me once
+
+on:
+  push:
+    branches:
+      - meepiap-discovery-v1
+
+permissions:
+  contents: write
+
+jobs:
+  fix-near-me:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: meepiap-discovery-v1
+          fetch-depth: 0
+      - name: Patch coordinate parsing
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import re
+          p=Path('worker/index.js')
+          s=p.read_text(encoding='utf-8')
+          pat=r"  const lat = Number\(url\.searchParams\.get\('lat'\)\);\n  const lng = Number\(url\.searchParams\.get\('lng'\)\);\n  const hasLocation = Number\.isFinite\(lat\) && Number\.isFinite\(lng\);"
+          rep="""  const latRaw = url.searchParams.get('lat');
+  const lngRaw = url.searchParams.get('lng');
+  const lat = latRaw === null ? Number.NaN : Number(latRaw);
+  const lng = lngRaw === null ? Number.NaN : Number(lngRaw);
+  const hasLocation = Number.isFinite(lat) && Number.isFinite(lng) &&
+    lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;"""
+          s2,n=re.subn(pat,rep,s,count=1)
+          if n!=1:
+              raise SystemExit(f'coordinate patch count={n}')
+          p.write_text(s2,encoding='utf-8')
+          PY
+          node --check worker/index.js
+          grep -q "latRaw === null" worker/index.js
+      - name: Commit
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add worker/index.js
+          git commit -m "Fix near-me detection for missing coordinates"
+          git push origin HEAD:meepiap-discovery-v1
