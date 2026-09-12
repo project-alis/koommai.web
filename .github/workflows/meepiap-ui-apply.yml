@@ -1,0 +1,81 @@
+name: Apply MEEPIAP wow UI
+
+on:
+  push:
+    branches:
+      - meepiap-discovery-v1
+
+permissions:
+  contents: write
+
+jobs:
+  apply-ui:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: meepiap-discovery-v1
+          fetch-depth: 0
+
+      - name: Wire UI assets and polish quick search
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          index = Path('public/index.html')
+          text = index.read_text(encoding='utf-8')
+          css_link = '  <link rel="stylesheet" href="/assets/meepiap-wow.css">\n'
+          js_link = '  <script src="/assets/meepiap-wow.js" defer></script>\n'
+          if '/assets/meepiap-wow.css' not in text:
+              text = text.replace('</head>', css_link + js_link + '</head>', 1)
+          elif '/assets/meepiap-wow.js' not in text:
+              text = text.replace('</head>', js_link + '</head>', 1)
+          index.write_text(text, encoding='utf-8')
+
+          css = Path('public/assets/meepiap-wow.css')
+          style = css.read_text(encoding='utf-8')
+          marker = '/* MEEPIAP quick-search helpers */'
+          if marker not in style:
+              style += r'''
+
+/* MEEPIAP quick-search helpers */
+.mee-quick-searches{
+  display:flex;justify-content:center;align-items:center;gap:7px;flex-wrap:wrap;
+  margin:11px auto 0;max-width:900px;
+}
+.mee-quick-label{font-size:.78rem;font-weight:800;color:#8a969e;margin-right:2px}
+.mee-quick-searches button{
+  min-height:34px;padding:6px 10px;border-radius:999px;border:1px solid rgba(24,41,54,.08);
+  background:rgba(255,255,255,.78);color:#556873;font-size:.78rem;font-weight:760;
+  box-shadow:none;cursor:pointer;transition:transform .15s ease,background .15s ease,border-color .15s ease;
+}
+.mee-quick-searches button:hover{transform:translateY(-1px);background:#fff;border-color:rgba(255,100,51,.22);color:#263f4e}
+@media(max-width:780px){
+  .mee-quick-searches{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding:1px 2px 6px;scrollbar-width:none}
+  .mee-quick-searches::-webkit-scrollbar{display:none}
+  .mee-quick-label,.mee-quick-searches button{flex:0 0 auto;white-space:nowrap}
+}
+'''
+          css.write_text(style, encoding='utf-8')
+          PY
+
+      - name: Validate UI integration
+        run: |
+          grep -q '/assets/meepiap-wow.css' public/index.html
+          grep -q '/assets/meepiap-wow.js' public/index.html
+          node --check public/assets/meepiap-wow.js
+          node --check public/assets/discovery.js
+          node --check worker/index.js
+
+      - name: Commit UI wiring
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add public/index.html public/assets/meepiap-wow.css
+          if git diff --cached --quiet; then
+            echo "UI already wired"
+            exit 0
+          fi
+          git commit -m "Wire MEEPIAP wow UI and quick search"
+          git push origin HEAD:meepiap-discovery-v1
