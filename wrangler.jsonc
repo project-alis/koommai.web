@@ -1,8 +1,12 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "ohopiap",
+  "name": "meepiap",
   "main": "worker/index.js",
   "compatibility_date": "2026-09-12",
+  "routes": [
+    { "pattern": "meepiap.com", "custom_domain": true },
+    { "pattern": "www.meepiap.com", "custom_domain": true }
+  ],
   "assets": {
     "directory": "./public",
     "binding": "ASSETS",
@@ -19,7 +23,8 @@
       "/sitemap.xml",
       "/robots.txt",
       "/api/*",
-      "/go/*"
+      "/go/*",
+      "/out/*"
     ]
   },
   "d1_databases": [

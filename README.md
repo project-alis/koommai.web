@@ -1,6 +1,6 @@
-# OHOPIAP (โอ้โหเพียบ) — V1.7.2
+# MEEPIAP (มีเพียบ) — V1.7.2
 
-OHOPIAP คือเว็บไซต์ช่วยตัดสินใจก่อนซื้อ ก่อนขาย และก่อนจ่าย โดยรีแบรนด์จากชื่อเดิม Koommai ใน V1.7 และปรับ Brand/UI เป็นภาษาไทยชัดเจนใน V1.7.1
+MEEPIAP คือเว็บไซต์ช่วยตัดสินใจก่อนซื้อ ก่อนขาย และก่อนจ่าย โดยรีแบรนด์จากชื่อเดิม Koommai ใน V1.7 และปรับ Brand/UI เป็นภาษาไทยชัดเจนใน V1.7.1
 
 ## ฟังก์ชันหลัก
 1. โปรนี้คุ้มจริงไหม?
@@ -12,9 +12,9 @@ OHOPIAP คือเว็บไซต์ช่วยตัดสินใจก
 7. Affiliate readiness health check ผ่าน `/api/health`
 
 ## Brand
-- Public brand: `โอ้โหเพียบ`
-- International / domain identity: `OHOPIAP`
-- Package: `ohopiap-web`
+- Public brand: `มีเพียบ`
+- International / domain identity: `MEEPIAP`
+- Package: `meepiap-web`
 - คำว่า “คุ้มไหม?” ยังคงใช้ในบริบทของคำถาม/ฟีเจอร์ เช่น “โปรนี้คุ้มจริงไหม?” ไม่ใช่ชื่อแบรนด์
 
 ## V1.7.2 Affiliate Readiness
@@ -25,16 +25,16 @@ OHOPIAP คือเว็บไซต์ช่วยตัดสินใจก
 - ไม่มี D1 migration ใหม่ใน V1.7.2
 
 ## Infrastructure
-- Cloudflare Worker name: `ohopiap`
-- Current workers.dev URL: `https://ohopiap.javis-github.workers.dev/`
+- Cloudflare Worker name: `meepiap`
+- Current workers.dev URL: `https://meepiap.javis-github.workers.dev/`
 - D1 binding: `DB`
 - D1 database: `koommai-db`
 - D1 database ID: `e629bb4c-0c0b-4e94-bba3-5032b3046114`
 - API / Affiliate logic ใช้ Worker และ D1 database เดิม
 
-Worker migration เป็น `ohopiap` สำเร็จแล้ว และ `/api/health` ยืนยันสถานะ `ok: true`, `db: true`, schema `affiliate-ready-v3` โดยมี pending products 18 รายการและ active 0 รายการ ณ วันที่ 12 กันยายน 2026
+Worker migration เป็น `meepiap` สำเร็จแล้ว และ `/api/health` ยืนยันสถานะ `ok: true`, `db: true`, schema `affiliate-ready-v3` โดยมี pending products 18 รายการและ active 0 รายการ ณ วันที่ 12 กันยายน 2026
 
-Canonical, og:url, sitemap และ robots.txt สร้างจาก request origin ใน `worker/index.js` จึงใช้ hostname `ohopiap.javis-github.workers.dev` โดยอัตโนมัติ
+Canonical, og:url, sitemap และ robots.txt สร้างจาก request origin ใน `worker/index.js` จึงใช้ hostname `meepiap.javis-github.workers.dev` โดยอัตโนมัติ
 
 > ยังไม่ rename `koommai-db` หรือเปลี่ยน database ID เพียงเพื่อรีแบรนด์
 
