@@ -1,4 +1,4 @@
--- OHOPIAP Discovery V1 seed template
+-- MEEPIAP Discovery V1 seed template
 -- Replace all example values with real, permitted source data before running.
 
 INSERT INTO discovery_entities (
@@ -12,7 +12,7 @@ INSERT INTO discovery_entities (
   'service',
   'phone-repair',
   'ร้านซ่อมมือถือ ตัวอย่าง',
-  'ข้อมูลตัวอย่างสำหรับทดสอบหน้าค้นหา OHOPIAP',
+  'ข้อมูลตัวอย่างสำหรับทดสอบหน้าค้นหา MEEPIAP',
   'เจ้าของร้านส่งข้อมูล',
   'https://example.com/source',
   'https://example.com/contact',

@@ -1,10 +1,10 @@
-# OHOPIAP Discovery V1
+# MEEPIAP Discovery V1
 
 ## Positioning
 
-**OHOPIAP — ค้นทีเดียว เจอเพียบ**
+**MEEPIAP — ค้นทีเดียว เจอเพียบ**
 
-OHOPIAP evolves from a product/affiliate price-check site into a universal Thai discovery layer. A single query can surface multiple ways to solve the same need rather than only selling a new product.
+MEEPIAP evolves from a product/affiliate price-check site into a universal Thai discovery layer. A single query can surface multiple ways to solve the same need rather than only selling a new product.
 
 Initial discovery worlds:
 
@@ -17,7 +17,7 @@ Initial discovery worlds:
 
 ## Product principle
 
-For a query such as `ตู้เย็น`, OHOPIAP should eventually be able to show:
+For a query such as `ตู้เย็น`, MEEPIAP should eventually be able to show:
 
 - new refrigerators / online deals
 - second-hand refrigerators
@@ -72,7 +72,7 @@ Do not scrape screenshots or permanently copy third-party marketplace/map conten
 4. public/open data with compatible licenses,
 5. manually curated records that link back to the source.
 
-Store only the data needed for OHOPIAP discovery and attribution.
+Store only the data needed for MEEPIAP discovery and attribution.
 
 ## MVP rollout
 
@@ -97,4 +97,4 @@ After measuring search and outbound clicks, expand in this order:
 
 ## Important
 
-The D1 database remains `koommai-db` internally for migration safety. Renaming the database is not required for the OHOPIAP brand.
+The D1 database remains `koommai-db` internally for migration safety. Renaming the database is not required for the MEEPIAP brand.

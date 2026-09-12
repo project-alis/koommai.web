@@ -65,7 +65,7 @@
     }
 
     result.hidden = false;
-    result.innerHTML = '<div class="discover-message"><b>กำลังค้นให้…</b><span>OHOPIAP กำลังรวมผลจากหลายประเภท</span></div>';
+    result.innerHTML = '<div class="discover-message"><b>กำลังค้นให้…</b><span>MEEPIAP กำลังรวมผลจากหลายประเภท</span></div>';
 
     const params = new URLSearchParams({ type: selectedType });
     if (q) params.set('q', q);

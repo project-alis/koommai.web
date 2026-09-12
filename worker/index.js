@@ -293,6 +293,9 @@ async function discover(request, env, url) {
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
+    if (url.hostname === 'www.meepiap.com' || url.hostname.endsWith('.workers.dev')) {
+      return Response.redirect(`https://meepiap.com${url.pathname}${url.search}`, 301);
+    }
 
     if (url.pathname === '/robots.txt') {
       return new Response(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /go/\nDisallow: /out/\nSitemap: ${url.origin}/sitemap.xml\n`, {

@@ -1,6 +1,6 @@
-# OHOPIAP (โอ้โหเพียบ) — V1.7
+# MEEPIAP (มีเพียบ) — V1.7
 
-OHOPIAP คือเว็บไซต์ช่วยตัดสินใจก่อนซื้อ ก่อนขาย และก่อนจ่าย โดยรีแบรนด์จากชื่อเดิม Koommai ใน V1.7
+MEEPIAP คือเว็บไซต์ช่วยตัดสินใจก่อนซื้อ ก่อนขาย และก่อนจ่าย โดยรีแบรนด์จากชื่อเดิม Koommai ใน V1.7
 
 ## ฟังก์ชันหลัก
 1. โปรนี้คุ้มจริงไหม?
@@ -11,9 +11,9 @@ OHOPIAP คือเว็บไซต์ช่วยตัดสินใจก
 6. SEO pages, sitemap, robots.txt และ structured data
 
 ## V1.7 Rebrand
-- Brand: `OHOPIAP`
-- Thai name: `โอ้โหเพียบ`
-- Package: `ohopiap-web`
+- Brand: `MEEPIAP`
+- Thai name: `มีเพียบ`
+- Package: `meepiap-web`
 - หน้าเว็บ, SEO title, PWA manifest, favicon, About, Privacy, Affiliate Disclosure, Contact, Tools และ Guides เปลี่ยนเป็นแบรนด์ใหม่
 - คำว่า “คุ้มไหม?” ยังคงใช้ในบริบทของคำถาม/ฟีเจอร์ เช่น “โปรนี้คุ้มจริงไหม?” ไม่ใช่ชื่อแบรนด์
 
@@ -59,4 +59,4 @@ wrangler.jsonc
 ```
 
 ## หมายเหตุสำหรับขั้นถัดไป
-ยังไม่ควร rename `koommai-db` หรือเปลี่ยน database ID เพียงเพื่อรีแบรนด์ ส่วน Worker name และ GitHub repository name ควรพิจารณาแยกหลังจากทดสอบ V1.7 ผ่านและเตรียม production domain ของ OHOPIAP แล้ว
+ยังไม่ควร rename `koommai-db` หรือเปลี่ยน database ID เพียงเพื่อรีแบรนด์ ส่วน Worker name และ GitHub repository name ควรพิจารณาแยกหลังจากทดสอบ V1.7 ผ่านและเตรียม production domain ของ MEEPIAP แล้ว
