@@ -29,6 +29,16 @@ const CATEGORY_COPY = {
   general: 'เป็นตัวเลือกที่เกี่ยวข้องกับผลคำนวณของคุณ'
 };
 
+const DISCOVERY_TYPE_LABELS = {
+  product: 'ของเพียบ',
+  service: 'ซ่อมเพียบ',
+  shop: 'ร้านเพียบ',
+  secondhand: 'มือสองเพียบ',
+  free: 'ฟรีเพียบ',
+  food: 'กินเพียบ',
+  place: 'ที่เพียบ'
+};
+
 function json(data, init = {}) {
   return new Response(JSON.stringify(data), {
     ...init,
@@ -50,12 +60,16 @@ function canonicalPath(pathname) {
   return pathname.endsWith('/') ? pathname : `${pathname}/`;
 }
 
-function safeImageUrl(value) {
+function safeExternalUrl(value) {
   if (!value) return null;
   try {
     const u = new URL(value);
     return ['https:', 'http:'].includes(u.protocol) ? u.toString() : null;
   } catch { return null; }
+}
+
+function safeImageUrl(value) {
+  return safeExternalUrl(value);
 }
 
 function autoReason(row) {
@@ -109,6 +123,69 @@ function productDto(row, index = 0) {
   };
 }
 
+function discoveryProductDto(row, index = 0) {
+  const p = productDto(row, index);
+  return {
+    id: `product:${row.id}`,
+    kind: 'product',
+    type_label: DISCOVERY_TYPE_LABELS.product,
+    slug: row.slug,
+    name: p.name,
+    category: p.category,
+    description: p.reason,
+    image_url: p.image_url,
+    price_text: p.display_price,
+    previous_price: p.previous_price,
+    discount_percent: p.discount_percent,
+    badge: p.badge,
+    merchant: p.merchant,
+    source_name: row.source_platform || p.merchant || 'Marketplace',
+    location_text: null,
+    latitude: null,
+    longitude: null,
+    verified: false,
+    featured: Number(row.popularity_score || 0) > 0,
+    action_url: p.go_url,
+    action_label: 'ดูราคาวันนี้'
+  };
+}
+
+function discoveryEntityDto(row) {
+  const locationText = [row.district, row.province].filter(Boolean).join(', ') || null;
+  return {
+    id: `entity:${row.id}`,
+    kind: row.entity_type,
+    type_label: DISCOVERY_TYPE_LABELS[row.entity_type] || 'รายการเพียบ',
+    slug: row.slug,
+    name: row.name,
+    category: row.category || 'general',
+    description: row.description || null,
+    image_url: safeImageUrl(row.image_url),
+    price_text: row.price_text || (Number(row.price_value) > 0 ? `฿${new Intl.NumberFormat('th-TH').format(Number(row.price_value))}` : null),
+    previous_price: null,
+    discount_percent: 0,
+    badge: Number(row.verified || 0) === 1 ? 'ยืนยันข้อมูลแล้ว' : null,
+    merchant: null,
+    source_name: row.source_name || null,
+    location_text: locationText,
+    latitude: Number.isFinite(Number(row.latitude)) ? Number(row.latitude) : null,
+    longitude: Number.isFinite(Number(row.longitude)) ? Number(row.longitude) : null,
+    verified: Number(row.verified || 0) === 1,
+    featured: Number(row.featured || 0) === 1,
+    action_url: (row.outbound_url || row.source_url) ? `/out/${encodeURIComponent(row.slug)}` : null,
+    action_label: row.entity_type === 'service' ? 'ดูร้าน/ติดต่อ' : row.entity_type === 'secondhand' ? 'ดูประกาศ' : row.entity_type === 'free' ? 'ดูของฟรี' : 'ดูรายละเอียด'
+  };
+}
+
+function distanceKm(aLat, aLng, bLat, bLng) {
+  if (![aLat, aLng, bLat, bLng].every(Number.isFinite)) return null;
+  const rad = (v) => v * Math.PI / 180;
+  const dLat = rad(bLat - aLat);
+  const dLng = rad(bLng - aLng);
+  const x = Math.sin(dLat / 2) ** 2 + Math.cos(rad(aLat)) * Math.cos(rad(bLat)) * Math.sin(dLng / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
+}
+
 async function serveHtmlWithSeo(request, env) {
   const url = new URL(request.url);
   const assetResponse = await env.ASSETS.fetch(request);
@@ -137,12 +214,88 @@ const PRODUCT_SELECT = `
   FROM affiliate_products
 `;
 
+const DISCOVERY_SELECT = `
+  SELECT id, slug, entity_type, category, name, description, image_url, source_name, source_url, outbound_url,
+         phone, line_url, price_text, price_value, latitude, longitude, district, province,
+         verified, featured, sort_order, updated_at
+  FROM discovery_entities
+`;
+
+async function discover(request, env, url) {
+  const q = (url.searchParams.get('q') || '').trim().slice(0, 120);
+  const type = (url.searchParams.get('type') || 'all').trim().slice(0, 24);
+  const lat = Number(url.searchParams.get('lat'));
+  const lng = Number(url.searchParams.get('lng'));
+  const hasLocation = Number.isFinite(lat) && Number.isFinite(lng);
+  const items = [];
+
+  if (type === 'all' || type === 'product') {
+    try {
+      let sql = `${PRODUCT_SELECT} WHERE active = 1`;
+      const binds = [];
+      if (q) {
+        binds.push(`%${q}%`, q);
+        sql += ` AND (name LIKE ?1 OR category LIKE ?1 OR merchant LIKE ?1 OR source_url = ?2)`;
+      }
+      sql += ` ORDER BY popularity_score DESC, sort_order ASC, id DESC LIMIT 18`;
+      const stmt = env.DB.prepare(sql);
+      const rows = q ? await stmt.bind(...binds).all() : await stmt.all();
+      (rows.results || []).forEach((row, index) => items.push(discoveryProductDto(row, index)));
+    } catch {}
+  }
+
+  if (type !== 'product') {
+    try {
+      let sql = `${DISCOVERY_SELECT} WHERE active = 1`;
+      const binds = [];
+      let p = 1;
+      if (type !== 'all') {
+        sql += ` AND entity_type = ?${p}`;
+        binds.push(type);
+        p += 1;
+      }
+      if (q) {
+        const like = `%${q}%`;
+        sql += ` AND (name LIKE ?${p} OR description LIKE ?${p} OR category LIKE ?${p} OR district LIKE ?${p} OR province LIKE ?${p})`;
+        binds.push(like);
+      }
+      sql += ` ORDER BY featured DESC, verified DESC, sort_order ASC, id DESC LIMIT 30`;
+      const stmt = env.DB.prepare(sql);
+      const rows = binds.length ? await stmt.bind(...binds).all() : await stmt.all();
+      (rows.results || []).forEach(row => items.push(discoveryEntityDto(row)));
+    } catch {}
+  }
+
+  if (hasLocation) {
+    items.forEach(item => {
+      const d = distanceKm(lat, lng, Number(item.latitude), Number(item.longitude));
+      item.distance_km = Number.isFinite(d) ? Math.round(d * 10) / 10 : null;
+    });
+    items.sort((a, b) => {
+      const ad = Number.isFinite(a.distance_km) ? a.distance_km : Number.POSITIVE_INFINITY;
+      const bd = Number.isFinite(b.distance_km) ? b.distance_km : Number.POSITIVE_INFINITY;
+      if (ad !== bd) return ad - bd;
+      return Number(b.featured) - Number(a.featured);
+    });
+  } else {
+    items.sort((a, b) => Number(b.featured) - Number(a.featured));
+  }
+
+  return json({
+    query: q,
+    type,
+    near: hasLocation,
+    count: items.length,
+    items: items.slice(0, 30)
+  }, { headers: { 'cache-control': q || hasLocation ? 'no-store' : 'public, max-age=120' } });
+}
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
 
     if (url.pathname === '/robots.txt') {
-      return new Response(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /go/\nSitemap: ${url.origin}/sitemap.xml\n`, {
+      return new Response(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /go/\nDisallow: /out/\nSitemap: ${url.origin}/sitemap.xml\n`, {
         headers: { 'content-type': 'text/plain; charset=utf-8' }
       });
     }
@@ -151,6 +304,10 @@ export default {
       return new Response(sitemap(url.origin), {
         headers: { 'content-type': 'application/xml; charset=utf-8', 'cache-control': 'public, max-age=3600' }
       });
+    }
+
+    if (url.pathname === '/api/discover' && request.method === 'GET') {
+      return discover(request, env, url);
     }
 
     if (url.pathname === '/api/home-feed' && request.method === 'GET') {
@@ -233,6 +390,30 @@ export default {
         `).bind(product.id, product.tool_key, safeReferrerPath(request)).run();
       } catch {}
       return Response.redirect(product.affiliate_url, 302);
+    }
+
+    if (url.pathname.startsWith('/out/') && request.method === 'GET') {
+      const slug = decodeURIComponent(url.pathname.slice(5)).slice(0, 120);
+      let entity;
+      try {
+        entity = await env.DB.prepare(`
+          SELECT id, outbound_url, source_url
+          FROM discovery_entities
+          WHERE slug = ?1 AND active = 1
+          LIMIT 1
+        `).bind(slug).first();
+      } catch {
+        return new Response('ระบบลิงก์ขัดข้องชั่วคราว', { status: 503, headers: { 'x-robots-tag': 'noindex, nofollow' } });
+      }
+      const target = safeExternalUrl(entity?.outbound_url || entity?.source_url);
+      if (!entity || !target) return new Response('ไม่พบลิงก์รายการ', { status: 404, headers: { 'x-robots-tag': 'noindex, nofollow' } });
+      try {
+        await env.DB.prepare(`
+          INSERT INTO discovery_click_events(entity_id, action, referrer_path)
+          VALUES (?1, 'open', ?2)
+        `).bind(entity.id, safeReferrerPath(request)).run();
+      } catch {}
+      return Response.redirect(target, 302);
     }
 
     if (request.method === 'GET' && (
