@@ -3,101 +3,124 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>คุ้มไหม? เช็กราคา โปร และความคุ้มก่อนซื้อ</title>
-  <meta name="description" content="คุ้มไหม? ช่วยเช็กก่อนซื้อ ว่าราคานี้คุ้มจริงไหม ดูส่วนลดจริง เทียบราคาต่อหน่วย และคำนวณกำไรขายออนไลน์ ฟรี ไม่ต้องสมัครสมาชิก">
+  <title>คุ้มไหม? เช็กราคา Shopee ก่อนซื้อ รู้ก่อนจ่าย</title>
+  <meta name="description" content="ราคานี้คุ้มไหม? ค้นหาสินค้าหรือวางลิงก์ Shopee แล้วเช็กความคุ้ม พร้อมดูส่วนลด เทียบราคาต่อหน่วย และคำนวณกำไร ฟรี ไม่ต้องสมัคร">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="th_TH">
-  <meta property="og:title" content="คุ้มไหม? เช็กก่อนซื้อ ก่อนขาย ก่อนจ่าย">
-  <meta property="og:description" content="วางลิงก์หรือค้นหาสินค้า แล้วดูความคุ้มแบบอ่านง่าย พร้อมเครื่องมือเช็กโปร กำไร และราคาต่อหน่วย">
+  <meta property="og:title" content="ราคานี้…คุ้มไหม? เช็กก่อนซื้อ รู้ก่อนจ่าย">
+  <meta property="og:description" content="ค้นหาสินค้าหรือวางลิงก์ Shopee แล้วเช็กง่าย ๆ ว่า ซื้อเลย หรือ รอก่อน พร้อมเครื่องมือช่วยคิดความคุ้ม">
   <link rel="stylesheet" href="/assets/style.css">
   <link rel="icon" href="/assets/favicon.svg">
   <link rel="manifest" href="/site.webmanifest">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"คุ้มไหม?","inLanguage":"th","description":"เครื่องมือช่วยตัดสินใจก่อนซื้อ ก่อนขาย และก่อนจ่ายเงิน"}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"คุ้มไหม?","inLanguage":"th","description":"ผู้ช่วยเช็กความคุ้มก่อนซื้อ ก่อนขาย และก่อนจ่ายเงิน"}</script>
 </head>
-<body class="consumer-home">
-<header>
-  <nav class="nav" aria-label="เมนูหลัก">
-    <a class="brand" href="/">คุ้มไหม?</a>
-    <div class="navlinks">
+<body class="consumer-home v17-home">
+<header class="v17-header">
+  <nav class="nav v17-nav" aria-label="เมนูหลัก">
+    <a class="brand v17-brand" href="/" aria-label="คุ้มไหม หน้าแรก"><span>คุ้ม</span>ไหม?</a>
+    <div class="navlinks v17-navlinks">
+      <a class="active" href="/">หน้าแรก</a>
+      <a href="#hot-products">สินค้าน่าจับตา</a>
       <a href="/tools/promo-check/">เช็กโปร</a>
-      <a href="/tools/profit-online/">เช็กกำไร</a>
       <a href="/tools/unit-price/">เทียบราคา</a>
+      <a href="/tools/profit-online/">คำนวณกำไร</a>
+      <a href="/guides/">บทความ</a>
     </div>
+    <a class="v17-nav-cta" href="#price-check">ลองเช็กเลย</a>
   </nav>
 </header>
 
-<main class="consumer-main">
-  <section class="price-hero" aria-labelledby="hero-title">
-    <div class="hero-glow hero-glow-a"></div><div class="hero-glow hero-glow-b"></div>
-    <div class="price-hero-inner">
-      <div class="eyebrow orange-eye">เช็กก่อนซื้อ • ไม่ต้องเดาเอง</div>
-      <h1 id="hero-title">ลดแล้ว<br><span>แต่คุ้มจริงหรือยัง?</span></h1>
-      <p>ค้นหาสินค้าหรือวางลิงก์ Shopee แล้วดูว่า “ราคานี้น่าซื้อไหม” พร้อมเครื่องมือช่วยคิดส่วนลด ต้นทุน และราคาต่อหน่วย</p>
+<main class="consumer-main v17-main">
+  <section class="v17-hero" id="price-check" aria-labelledby="hero-title">
+    <div class="v17-dot-grid" aria-hidden="true"></div>
+    <div class="v17-hero-grid">
+      <div class="v17-hero-copy">
+        <div class="v17-eyebrow">เช็กก่อนซื้อ <i>•</i> รู้ก่อนจ่าย <i>•</i> ไม่ต้องเดาเอง</div>
+        <h1 id="hero-title">ราคานี้…<span>คุ้มไหม?</span></h1>
+        <p class="v17-lead">ค้นหาสินค้าหรือวางลิงก์ Shopee แล้วเช็กง่าย ๆ ว่า <b>“ซื้อเลย”</b> หรือ <b>“รอก่อน”</b> พร้อมดูส่วนลดและความคุ้มในที่เดียว</p>
 
-      <form class="product-search" id="home-search-form" role="search" autocomplete="off">
-        <span class="search-link-icon" aria-hidden="true">⌕</span>
-        <input id="home-search" name="q" type="search" placeholder="วางลิงก์ Shopee หรือพิมพ์ชื่อสินค้า" aria-label="ค้นหาสินค้าหรือวางลิงก์ Shopee">
-        <button class="paste-button" type="button" id="paste-link">วาง</button>
-        <button class="search-button" type="submit">เช็กคุ้ม</button>
-      </form>
-      <p class="search-hint">ข้อมูลที่แสดงมาจากรายการที่ระบบบันทึกไว้และอัปเดตตามเวลาที่ระบุ ราคาจริงอาจเปลี่ยนได้ตลอดเวลา</p>
-      <div id="home-search-result" class="home-search-result" hidden></div>
+        <form class="product-search v17-search" id="home-search-form" role="search" autocomplete="off">
+          <span class="v17-search-icon" aria-hidden="true">⌕</span>
+          <input id="home-search" name="q" type="search" placeholder="ค้นหาสินค้า หรือวางลิงก์ Shopee ที่นี่" aria-label="ค้นหาสินค้าหรือวางลิงก์ Shopee">
+          <button class="paste-button v17-paste" type="button" id="paste-link">วาง</button>
+          <button class="search-button v17-search-button" type="submit">เช็กว่าคุ้มไหม <span aria-hidden="true">→</span></button>
+        </form>
 
-      <div class="worth-strip" aria-label="คุ้มไหมช่วยดูอะไรบ้าง">
-        <div><strong>ลดจริงไหม</strong><span>คิดส่วนลดสุทธิ</span></div>
-        <div><strong>ซื้อหรือรอ</strong><span>สรุปแบบอ่านง่าย</span></div>
-        <div><strong>แพ็กไหนคุ้ม</strong><span>เทียบราคาต่อหน่วย</span></div>
-        <div><strong>ขายแล้วกำไรไหม</strong><span>รวมต้นทุนที่มักลืม</span></div>
+        <div class="v17-trust-row" aria-label="จุดเด่นของบริการ">
+          <span><b>✓</b> ใช้ฟรี</span>
+          <span><b>✓</b> ไม่ต้องสมัคร</span>
+          <span><b>✓</b> รู้ผลทันที</span>
+        </div>
+        <div id="home-search-result" class="home-search-result" hidden></div>
       </div>
 
-      <div class="category-chips" aria-label="หมวดที่สนใจ">
-        <button type="button" data-home-category="all" class="active">🔥 น่าจับตา</button>
-        <button type="button" data-home-category="powerbank">🔋 มือถือ</button>
-        <button type="button" data-home-category="office">💻 ไอที/ออฟฟิศ</button>
-        <button type="button" data-home-category="household">🏠 ของใช้บ้าน</button>
-        <button type="button" data-home-category="packaging">📦 ร้านออนไลน์</button>
-        <button type="button" data-home-category="personal">🧴 ของใช้ส่วนตัว</button>
+      <div class="v17-hero-visual" aria-hidden="true">
+        <div class="v17-orbit v17-orbit-a"></div>
+        <div class="v17-orbit v17-orbit-b"></div>
+        <div class="v17-phone-card">
+          <div class="v17-phone-notch"></div>
+          <div class="v17-bag">✓</div>
+          <b>คุ้มไหม?</b>
+          <small>เช็กก่อนซื้อ</small>
+        </div>
+        <div class="v17-cart-mascot">
+          <div class="v17-cart-face">◕‿◕</div>
+          <div class="v17-cart-handle"></div>
+          <span class="v17-wheel one"></span><span class="v17-wheel two"></span>
+        </div>
+        <div class="v17-feature-card fc-one"><span>↗</span><div><b>ดูราคาย้อนหลัง</b><small>ช่วยตัดสินใจง่ายขึ้น</small></div></div>
+        <div class="v17-feature-card fc-two"><span>%</span><div><b>คำนวณส่วนลด</b><small>ดูส่วนลดสุทธิจริง</small></div></div>
+        <div class="v17-feature-card fc-three"><span>⚖</span><div><b>เทียบราคาต่อหน่วย</b><small>ซื้อขนาดไหนคุ้มสุด</small></div></div>
       </div>
+    </div>
+
+    <div class="category-chips v17-categories" aria-label="หมวดที่สนใจ">
+      <button type="button" data-home-category="all" class="active">🔥 ดีลน่าจับตา</button>
+      <button type="button" data-home-category="powerbank">📱 มือถือ & แก็ดเจ็ต</button>
+      <button type="button" data-home-category="office">💻 คอมพิวเตอร์ & ไอที</button>
+      <button type="button" data-home-category="household">🏠 ของใช้ในบ้าน</button>
+      <button type="button" data-home-category="packaging">📦 ร้านออนไลน์</button>
+      <button type="button" data-home-category="personal">🧴 สุขภาพ & ของใช้ส่วนตัว</button>
     </div>
   </section>
 
-  <section class="consumer-banner" aria-label="คุ้มไหมช่วยตัดสินใจอย่างไร">
-    <div class="banner-copy">
-      <span class="banner-kicker">ก่อนกดซื้อ ลองดู 3 อย่าง</span>
-      <h2>ราคาป้าย ≠ ราคาที่คุ้มเสมอ</h2>
-      <p>คุ้มไหม? ช่วยแยก “ส่วนลดที่เห็น” ออกจาก “เงินที่จ่ายจริง” แล้วพาไปดูเครื่องมือที่เหมาะกับคำถามของคุณ</p>
-      <a class="banner-cta" href="/tools/promo-check/">ลองเช็กโปร →</a>
-    </div>
-    <div class="banner-points" aria-hidden="true">
-      <div><b>1</b><span>ดูยอดจ่ายจริง</span></div>
-      <div><b>2</b><span>เทียบต่อหน่วย</span></div>
-      <div><b>3</b><span>ตัดสินใจจากตัวเลข</span></div>
-    </div>
-  </section>
-
-  <section class="market-section" id="hot-products" aria-labelledby="hot-title">
-    <div class="market-head">
-      <div><span class="section-kicker">AUTO PRODUCT FEED</span><h2 id="hot-title">สินค้าน่าจับตา <span aria-hidden="true">🔥</span></h2><p>การ์ดด้านล่างสร้างจากข้อมูลสินค้าในระบบอัตโนมัติ ทั้งรูป ราคา ร้าน และป้าย “คุ้มไหม?”</p></div>
+  <section class="market-section v17-market" id="hot-products" aria-labelledby="hot-title">
+    <div class="market-head v17-section-head">
+      <div><span class="section-kicker">TRENDING PRODUCTS</span><h2 id="hot-title">สินค้าน่าจับตา <span aria-hidden="true">🔥</span></h2><p>สินค้าที่ระบบมีข้อมูลและกำลังน่าดู เช็กตัวเลขก่อนกดซื้อทุกครั้ง</p></div>
       <a href="/tools/" class="text-link">ดูเครื่องมือทั้งหมด →</a>
     </div>
     <div class="feed-status" id="feed-status" hidden></div>
-    <div class="hot-grid" id="home-product-grid" aria-live="polite"></div>
-    <div class="feed-empty" id="home-feed-empty" hidden>
+    <div class="hot-grid v17-hot-grid" id="home-product-grid" aria-live="polite"></div>
+    <div class="feed-empty v17-feed-empty" id="home-feed-empty" hidden>
       <div class="empty-icon">🛍️</div>
-      <h3>ระบบพร้อมแล้ว รอสินค้า Affiliate จริง</h3>
-      <p>เมื่อมีสินค้าที่เปิดใช้งานใน D1 การ์ดรูป ชื่อ ราคา ร้าน และป้ายความคุ้มจะขึ้นตรงนี้อัตโนมัติ</p>
+      <h3>หน้า Auto Product พร้อมแล้ว</h3>
+      <p>เมื่อสินค้า Affiliate จริงถูกเปิดใช้งาน รูป ชื่อ ราคา ร้าน และป้าย “คุ้มไหม?” จะขึ้นตรงนี้อัตโนมัติ</p>
       <a href="/?preview=1#hot-products" class="button secondary">ดูตัวอย่าง UI</a>
     </div>
   </section>
 
-  <section class="market-section shop-section" aria-labelledby="shop-title">
-    <div class="market-head"><div><span class="section-kicker">ร้านและหมวดที่มีข้อมูล</span><h2 id="shop-title">ร้านค้ายอดนิยม</h2><p>จัดอันดับจากสินค้าที่เปิดใช้งานอยู่ในระบบ ไม่ได้เป็นการรับรองร้านโดยคุ้มไหม?</p></div></div>
+  <section class="v17-how" aria-labelledby="how-title">
+    <div class="v17-how-intro">
+      <span class="section-kicker">ทำไมต้องใช้ คุ้มไหม?</span>
+      <h2 id="how-title">เช็กก่อนซื้อ ใช้เงินอย่างมีเหตุผล</h2>
+      <p>เราออกแบบให้ดูง่าย ไม่ต้องเก่งตัวเลขก็ใช้ได้</p>
+    </div>
+    <div class="v17-how-grid">
+      <article><span>1</span><div><b>ค้นหาหรือวางลิงก์</b><small>ใส่ชื่อสินค้าหรือลิงก์ Shopee ที่สนใจ</small></div></article>
+      <article><span>2</span><div><b>ระบบช่วยวิเคราะห์</b><small>ดูราคา ส่วนลด และข้อมูลที่ระบบมี</small></div></article>
+      <article><span>3</span><div><b>รู้แล้วว่าคุ้มไหม</b><small>สรุปให้เห็นง่ายว่า ซื้อเลย หรือควรรอ</small></div></article>
+      <article><span>4</span><div><b>ค่อยไปซื้อเมื่อพร้อม</b><small>ถ้ามี Affiliate link จะพาไปหน้าสินค้าจริง</small></div></article>
+    </div>
+  </section>
+
+  <section class="market-section shop-section v17-shops" aria-labelledby="shop-title">
+    <div class="market-head v17-section-head"><div><span class="section-kicker">POPULAR SHOPS</span><h2 id="shop-title">ร้านค้ายอดนิยม</h2><p>จัดจากร้านที่มีสินค้าที่เปิดใช้งานอยู่ในระบบ ไม่ใช่การรับรองอย่างเป็นทางการ</p></div></div>
     <div class="shop-grid" id="home-shop-grid"></div>
   </section>
 
-  <section class="tool-shortcuts" aria-labelledby="tool-title">
-    <div class="market-head"><div><span class="section-kicker">เครื่องมือของคุ้มไหม?</span><h2 id="tool-title">ถ้ายังตัดสินใจไม่ได้ ลองคำนวณตรง ๆ</h2></div></div>
+  <section class="tool-shortcuts v17-tools" aria-labelledby="tool-title">
+    <div class="market-head v17-section-head"><div><span class="section-kicker">เครื่องมือของคุ้มไหม?</span><h2 id="tool-title">อยากรู้ให้ชัด ลองคำนวณตรง ๆ</h2></div></div>
     <div class="tool-shortcut-grid">
       <a href="/tools/promo-check/"><span>🛒</span><div><b>โปรนี้คุ้มจริงไหม?</b><small>รวมโค้ด ส่วนลด ค่าส่ง และ Cashback</small></div><i>→</i></a>
       <a href="/tools/unit-price/"><span>⚖️</span><div><b>อันไหนถูกกว่าจริง?</b><small>เทียบราคาต่อชิ้น ต่อกรัม ต่อ ml</small></div><i>→</i></a>
@@ -105,24 +128,24 @@
     </div>
   </section>
 
-  <section class="source-section" aria-labelledby="source-title">
-    <div class="market-head"><div><span class="section-kicker">โปร่งใสเรื่องข้อมูล</span><h2 id="source-title">ข้อมูลสินค้าและราคามาจากไหน?</h2></div></div>
+  <section class="source-section v17-source" aria-labelledby="source-title">
+    <div class="market-head v17-section-head"><div><span class="section-kicker">โปร่งใสเรื่องข้อมูล</span><h2 id="source-title">ข้อมูลสินค้าและราคามาจากไหน?</h2></div></div>
     <div class="source-grid">
-      <article><span>1</span><h3>รับข้อมูลสินค้าที่อนุญาตให้ใช้</h3><p>ระบบรองรับชื่อสินค้า รูป ราคา ร้านค้า และลิงก์ต้นทางจาก Shopee/แหล่ง Affiliate ที่ได้รับสิทธิ์ใช้งาน</p></article>
-      <article><span>2</span><h3>บันทึกราคาและเวลาที่ตรวจ</h3><p>เก็บข้อมูลล่าสุดไว้ใน D1 เพื่อให้หน้าเว็บสร้างการ์ดและข้อความอัตโนมัติ โดยไม่ต้องแก้ HTML ทีละสินค้า</p></article>
-      <article><span>3</span><h3>สรุปว่า “คุ้มไหม?”</h3><p>ใช้กติกาจากราคาเดิม ส่วนลด และข้อมูลที่มี เพื่อแสดงป้าย เช่น “คุ้มมาก”, “ราคาดี” หรือ “ควรรอ” แบบอัตโนมัติ</p></article>
+      <article><span>1</span><h3>ข้อมูลที่ได้รับสิทธิ์ใช้งาน</h3><p>ระบบรองรับชื่อสินค้า รูป ราคา ร้านค้า และลิงก์จากแหล่ง Affiliate/Marketplace ที่อนุญาต</p></article>
+      <article><span>2</span><h3>เก็บราคาและเวลาที่ตรวจ</h3><p>ข้อมูลล่าสุดถูกเก็บใน D1 เพื่อให้หน้าเว็บสร้างการ์ดและข้อความอัตโนมัติ</p></article>
+      <article><span>3</span><h3>สรุปเป็นภาษาคนทั่วไป</h3><p>ใช้กติกาจากส่วนลดและราคาอ้างอิง เพื่อแสดง “คุ้มมาก”, “ราคาดี” หรือ “ควรรอ”</p></article>
     </div>
-    <p class="source-note">หมายเหตุ: คุ้มไหม? ไม่ใช่เว็บไซต์ทางการของ Shopee และราคาหน้า Marketplace อาจเปลี่ยนหลังจากเวลาที่ระบบตรวจล่าสุด</p>
+    <p class="source-note">คุ้มไหม? ไม่ใช่เว็บไซต์ทางการของ Shopee ราคาจริงและเงื่อนไขอาจเปลี่ยนได้ตลอดเวลา กรุณาตรวจสอบที่หน้าสินค้าก่อนชำระเงิน</p>
   </section>
 
-  <section class="seo-story">
-    <h2>เช็กก่อนซื้อ ช่วยลดการตัดสินใจจากป้าย “ลดแรง” อย่างเดียว</h2>
-    <p>บางโปรลดเปอร์เซ็นต์สูงแต่ติดเพดาน ส่วนบางแพ็กดูถูกแต่ราคาต่อหน่วยแพงกว่า คุ้มไหม? จึงรวมเครื่องมือคำนวณง่าย ๆ และข้อมูลสินค้าที่ระบบมีไว้ในที่เดียว เพื่อให้คุณเห็นตัวเลขก่อนจ่ายจริง</p>
+  <section class="seo-story v17-seo">
+    <h2>ลดเยอะ ไม่ได้แปลว่าคุ้มเสมอไป</h2>
+    <p>บางโปรลดเปอร์เซ็นต์สูงแต่ติดเพดาน บางแพ็กดูถูกแต่ราคาต่อหน่วยแพงกว่า และบางสินค้าลดจากราคาป้ายที่สูงเกินจริง “คุ้มไหม?” จึงเน้นให้คุณเห็นตัวเลขก่อนตัดสินใจจ่ายเงินจริง</p>
   </section>
 </main>
 
 <footer>
-  <div class="footer"><div>คุ้มไหม? เป็นเครื่องมือช่วยคำนวณและตัดสินใจเบื้องต้น ข้อมูลราคา โปรโมชัน และค่าธรรมเนียมจริงอาจเปลี่ยนตามเงื่อนไข ณ เวลานั้น</div><div class="footer-links"><a href="/about/">เกี่ยวกับเรา</a><a href="/privacy/">ความเป็นส่วนตัว</a><a href="/affiliate-disclosure/">การเปิดเผย Affiliate</a><a href="/contact/">ติดต่อ</a></div></div>
+  <div class="footer"><div><b>คุ้มไหม?</b> เครื่องมือช่วยคิดก่อนซื้อ ก่อนขาย และก่อนจ่าย ข้อมูลราคาและโปรโมชันจริงอาจเปลี่ยนตามเวลา</div><div class="footer-links"><a href="/about/">เกี่ยวกับเรา</a><a href="/privacy/">ความเป็นส่วนตัว</a><a href="/affiliate-disclosure/">Affiliate</a><a href="/contact/">ติดต่อ</a></div></div>
 </footer>
 <script src="/assets/app.js" defer></script>
 </body>

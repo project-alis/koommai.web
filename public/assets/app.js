@@ -85,7 +85,7 @@ const HOME_PREVIEW_ITEMS = [
   {name:'แชมพูแพ็กคู่',category:'personal',display_price:'฿259',previous_price:'฿299',discount_percent:13,merchant:'ร้านของใช้ตัวอย่าง',badge:'ราคาดี',state:'good',reason:'ควรเทียบราคาต่อ ml และจำนวนชิ้นก่อนซื้อ',image_url:'/assets/product-placeholder.svg',go_url:'#',demo:true}
 ];
 
-function productCardHtml(x){
+function productCardHtml(x, index=0){
   const demo=!!x.demo;
   const cls=x.state==='warn'?'warn':x.state==='bad'?'bad':'good';
   const old=x.previous_price?`<span class="old-price">${escapeHtml(x.previous_price)}</span>`:'';
@@ -95,7 +95,7 @@ function productCardHtml(x){
     ? `<span class="demo-action">ตัวอย่าง UI</span>`
     : `<a class="deal-action" rel="sponsored nofollow noopener" href="${escapeAttr(x.go_url)}">ดูราคาวันนี้</a>`;
   return `<article class="deal-card" data-category="${escapeAttr(x.category||'general')}">
-    <div class="deal-image"><img src="${escapeAttr(img)}" alt="${escapeAttr(x.image_alt||x.name)}" loading="lazy" decoding="async" data-fallback="1"><span class="worth-badge ${cls}">${escapeHtml(x.badge||'น่าจับตา')}</span></div>
+    <div class="deal-image"><img src="${escapeAttr(img)}" alt="${escapeAttr(x.image_alt||x.name)}" loading="lazy" decoding="async" data-fallback="1"><span class="worth-badge ${cls}">${escapeHtml(x.badge||'น่าจับตา')}</span><span class="deal-rank ${index<3?'top':''}">${index+1}</span></div>
     <div class="deal-body">
       <div class="deal-merchant">${escapeHtml(x.merchant||'Marketplace')}</div>
       <h3>${escapeHtml(x.name)}</h3>
