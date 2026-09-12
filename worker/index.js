@@ -58,6 +58,14 @@ function safeImageUrl(value) {
   } catch { return null; }
 }
 
+function safeAffiliateUrl(value) {
+  if (!value) return null;
+  try {
+    const u = new URL(value);
+    return u.protocol === 'https:' ? u.toString() : null;
+  } catch { return null; }
+}
+
 function autoReason(row) {
   if (row.reason?.trim()) return row.reason.trim();
   if (row.highlight?.trim()) return row.highlight.trim();
@@ -137,6 +145,8 @@ const PRODUCT_SELECT = `
   FROM affiliate_products
 `;
 
+const LIVE_PRODUCT_FILTER = `active = 1 AND affiliate_url LIKE 'https://%'`;
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -153,17 +163,48 @@ export default {
       });
     }
 
+    if (url.pathname === '/api/health' && request.method === 'GET') {
+      try {
+        await env.DB.prepare(`
+          SELECT source_platform, source_url, current_price, previous_price, discount_percent,
+                 popularity_score, shop_logo_url, last_checked_at
+          FROM affiliate_products
+          LIMIT 1
+        `).all();
+        await env.DB.prepare(`SELECT id FROM click_events LIMIT 1`).all();
+        const counts = await env.DB.prepare(`
+          SELECT COUNT(*) AS total,
+                 SUM(CASE WHEN ${LIVE_PRODUCT_FILTER} THEN 1 ELSE 0 END) AS active
+          FROM affiliate_products
+        `).first();
+        return json({
+          ok: true,
+          db: true,
+          schema: 'affiliate-ready-v3',
+          products: {
+            total: Number(counts?.total || 0),
+            active: Number(counts?.active || 0)
+          }
+        }, { headers: { 'cache-control': 'no-store' } });
+      } catch {
+        return json({ ok: false, db: false, schema: 'migration-required' }, {
+          status: 503,
+          headers: { 'cache-control': 'no-store' }
+        });
+      }
+    }
+
     if (url.pathname === '/api/home-feed' && request.method === 'GET') {
       try {
         const rows = await env.DB.prepare(`${PRODUCT_SELECT}
-          WHERE active = 1
+          WHERE ${LIVE_PRODUCT_FILTER}
           ORDER BY popularity_score DESC, sort_order ASC, id DESC
           LIMIT 10
         `).all();
         const shopRows = await env.DB.prepare(`
           SELECT merchant, COUNT(*) AS count
           FROM affiliate_products
-          WHERE active = 1 AND merchant IS NOT NULL AND TRIM(merchant) <> ''
+          WHERE ${LIVE_PRODUCT_FILTER} AND merchant IS NOT NULL AND TRIM(merchant) <> ''
           GROUP BY merchant
           ORDER BY count DESC, merchant ASC
           LIMIT 8
@@ -182,7 +223,7 @@ export default {
       if (!q) return json({ items: [] });
       try {
         const rows = await env.DB.prepare(`${PRODUCT_SELECT}
-          WHERE active = 1 AND (
+          WHERE ${LIVE_PRODUCT_FILTER} AND (
             name LIKE '%' || ?1 || '%' OR
             category LIKE '%' || ?1 || '%' OR
             merchant LIKE '%' || ?1 || '%' OR
@@ -202,7 +243,7 @@ export default {
       if (!tool) return json({ items: [] });
       try {
         const rows = await env.DB.prepare(`${PRODUCT_SELECT}
-          WHERE tool_key = ?1 AND active = 1
+          WHERE tool_key = ?1 AND ${LIVE_PRODUCT_FILTER}
           ORDER BY sort_order ASC, id DESC
           LIMIT 3
         `).bind(tool).all();
@@ -226,13 +267,17 @@ export default {
         return new Response('ระบบลิงก์สินค้าขัดข้องชั่วคราว', { status: 503, headers: { 'x-robots-tag': 'noindex, nofollow' } });
       }
       if (!product) return new Response('ไม่พบลิงก์สินค้า', { status: 404, headers: { 'x-robots-tag': 'noindex, nofollow' } });
+      const destination = safeAffiliateUrl(product.affiliate_url);
+      if (!destination) {
+        return new Response('ลิงก์สินค้านี้ยังไม่พร้อมใช้งาน', { status: 503, headers: { 'x-robots-tag': 'noindex, nofollow' } });
+      }
       try {
         await env.DB.prepare(`
           INSERT INTO click_events(product_id, tool_key, referrer_path)
           VALUES (?1, ?2, ?3)
         `).bind(product.id, product.tool_key, safeReferrerPath(request)).run();
       } catch {}
-      return Response.redirect(product.affiliate_url, 302);
+      return Response.redirect(destination, 302);
     }
 
     if (request.method === 'GET' && (
