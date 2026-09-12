@@ -1,8 +1,33 @@
-"d1_databases": [
-  {
-    "binding": "DB",
-    "database_name": "koommai-db",
-    "database_id": "e629bb4c-0c0b-4e94-bba3-5032b3046114",
-    "migrations_dir": "migrations"
-  }
-]
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "koommai",
+  "main": "worker/index.js",
+  "compatibility_date": "2026-09-12",
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "html_handling": "auto-trailing-slash",
+    "not_found_handling": "404-page",
+    "run_worker_first": [
+      "/",
+      "/tools/*",
+      "/guides/*",
+      "/about/*",
+      "/privacy/*",
+      "/affiliate-disclosure/*",
+      "/contact/*",
+      "/sitemap.xml",
+      "/robots.txt",
+      "/api/*",
+      "/go/*"
+    ]
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "koommai-db",
+      "database_id": "e629bb4c-0c0b-4e94-bba3-5032b3046114",
+      "migrations_dir": "migrations"
+    }
+  ]
+}
