@@ -1,0 +1,103 @@
+name: MEEPIAP brand migration
+
+on:
+  push:
+    branches:
+      - meepiap-discovery-v1
+
+permissions:
+  contents: write
+
+jobs:
+  migrate-brand:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: meepiap-discovery-v1
+          fetch-depth: 0
+
+      - name: Replace legacy brand references
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+
+          replacements = [
+              ('OHOPIAP', 'MEEPIAP'),
+              ('Ohopiap', 'Meepiap'),
+              ('ohopiap', 'meepiap'),
+              ('โอ้โหเพียบ', 'มีเพียบ'),
+          ]
+          allowed = {'.md', '.txt', '.html', '.js', '.json', '.jsonc', '.svg', '.sql', '.css'}
+          skip_parts = {'.git', 'node_modules'}
+
+          for path in Path('.').rglob('*'):
+              if not path.is_file() or path.suffix.lower() not in allowed:
+                  continue
+              if any(part in skip_parts for part in path.parts):
+                  continue
+              text = path.read_text(encoding='utf-8')
+              new = text
+              for old, repl in replacements:
+                  new = new.replace(old, repl)
+              if new != text:
+                  path.write_text(new, encoding='utf-8')
+
+          # Custom domain routes: keep the existing D1 database name unchanged.
+          wrangler = Path('wrangler.jsonc')
+          text = wrangler.read_text(encoding='utf-8')
+          if '"routes"' not in text:
+              needle = '  "compatibility_date": "2026-09-12",\n'
+              routes = (
+                  '  "compatibility_date": "2026-09-12",\n'
+                  '  "routes": [\n'
+                  '    { "pattern": "meepiap.com", "custom_domain": true },\n'
+                  '    { "pattern": "www.meepiap.com", "custom_domain": true }\n'
+                  '  ],\n'
+              )
+              text = text.replace(needle, routes, 1)
+          wrangler.write_text(text, encoding='utf-8')
+
+          # Make the apex domain canonical: www and workers.dev redirect to meepiap.com.
+          worker = Path('worker/index.js')
+          text = worker.read_text(encoding='utf-8')
+          needle = "  async fetch(request, env) {\n    const url = new URL(request.url);\n"
+          replacement = (
+              "  async fetch(request, env) {\n"
+              "    const url = new URL(request.url);\n"
+              "    if (url.hostname === 'www.meepiap.com' || url.hostname.endsWith('.workers.dev')) {\n"
+              "      return Response.redirect(`https://meepiap.com${url.pathname}${url.search}`, 301);\n"
+              "    }\n"
+          )
+          if "url.hostname === 'www.meepiap.com'" not in text:
+              text = text.replace(needle, replacement, 1)
+          worker.write_text(text, encoding='utf-8')
+          PY
+
+      - name: Brand audit
+        run: |
+          if grep -RIn --exclude-dir=.git --exclude=meepiap-brand-migration.yml -E 'OHOPIAP|Ohopiap|ohopiap|โอ้โหเพียบ' .; then
+            echo 'Legacy brand references remain.'
+            exit 1
+          fi
+          grep -RIn --exclude-dir=.git -E 'MEEPIAP|มีเพียบ' public README*.md README*.txt package.json wrangler.jsonc | head -80
+
+      - name: Syntax checks
+        run: |
+          node --check worker/index.js
+          node --check public/assets/app.js
+          node --check public/assets/discovery.js
+          python3 -m json.tool package.json >/dev/null
+
+      - name: Commit migration
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No migration changes needed"
+            exit 0
+          fi
+          git commit -m "Rebrand OHOPIAP to MEEPIAP and configure meepiap.com"
+          git push origin HEAD:meepiap-discovery-v1
