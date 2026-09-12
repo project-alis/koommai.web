@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/wrangler/config-schema.json",
-  "name": "koommai",
+  "name": "ohopiap",
   "main": "worker/index.js",
   "compatibility_date": "2026-09-12",
   "assets": {
@@ -19,7 +19,8 @@
       "/sitemap.xml",
       "/robots.txt",
       "/api/*",
-      "/go/*"
+      "/go/*",
+      "/out/*"
     ]
   },
   "d1_databases": [
