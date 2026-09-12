@@ -13,7 +13,7 @@ jobs:
     if: github.actor != 'github-actions[bot]'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
         with:
           ref: meepiap-discovery-v1
           fetch-depth: 0
@@ -29,7 +29,7 @@ jobs:
               ('ohopiap', 'meepiap'),
               ('โอ้โหเพียบ', 'มีเพียบ'),
           ]
-          allowed = {'.md', '.txt', '.html', '.js', '.json', '.jsonc', '.svg', '.sql', '.css'}
+          allowed = {'.md', '.txt', '.html', '.js', '.json', '.jsonc', '.svg', '.sql', '.css', '.webmanifest'}
           skip_parts = {'.git', 'node_modules'}
 
           for path in Path('.').rglob('*'):
@@ -99,5 +99,5 @@ jobs:
             echo "No migration changes needed"
             exit 0
           fi
-          git commit -m "Rebrand OHOPIAP to MEEPIAP and configure meepiap.com"
+          git commit -m "Rebrand to MEEPIAP and configure meepiap.com"
           git push origin HEAD:meepiap-discovery-v1
