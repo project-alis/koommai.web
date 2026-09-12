@@ -7,8 +7,8 @@ async function loadRecommendations(tool){
     const r=await fetch(`/api/recommendations?tool=${encodeURIComponent(tool)}`);
     const d=await r.json();
     if(!d.items?.length){
-      box.hidden=false;
-      box.innerHTML=`<div class="empty-products"><strong>ระบบแนะนำสินค้าอัตโนมัติพร้อมแล้ว</strong><div>ตอนนี้ยังไม่ได้ใส่ลิงก์ Affiliate จริง เมื่อเพิ่มสินค้าใน D1 ระบบจะสร้างรูป ชื่อ ราคา ข้อความ และปุ่มซื้อให้ตรงนี้อัตโนมัติ</div><div class="demo-row"><div class="demo-product"><div class="demo-thumb">🛍️</div><b>สินค้าแนะนำ</b><span>รูป + ชื่อ + ราคา</span></div><div class="demo-product"><div class="demo-thumb">✨</div><b>ข้อความอัตโนมัติ</b><span>เลือกตามเครื่องมือ</span></div><div class="demo-product"><div class="demo-thumb">🔗</div><b>Affiliate</b><span>กดแล้ว Track click</span></div></div></div>`;
+      box.hidden=true;
+      box.innerHTML='';
       return;
     }
     box.hidden=false;
