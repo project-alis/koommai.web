@@ -151,7 +151,7 @@ async function homeSearch(query){
   try{
     const r=await fetch(`/api/product-search?q=${encodeURIComponent(q)}`); const d=await r.json();
     if(!d.items?.length){
-      out.innerHTML=`<div class="search-empty"><b>ยังไม่พบรายการนี้ในฐานคุ้มไหม?</b><span>ลองพิมพ์ชื่อสินค้าแทนลิงก์ หรือใช้เครื่องมือเช็กโปรด้านล่างได้เลย</span><a href="/tools/promo-check/">ไปเช็กโปร →</a></div>`;return;
+      out.innerHTML=`<div class="search-empty"><b>ยังไม่พบรายการนี้ในMEEPIAP</b><span>ลองพิมพ์ชื่อสินค้าแทนลิงก์ หรือใช้เครื่องมือเช็กโปรด้านล่างได้เลย</span><a href="/tools/promo-check/">ไปเช็กโปร →</a></div>`;return;
     }
     out.innerHTML=`<div class="search-result-head"><b>พบ ${d.items.length} รายการ</b><button type="button" data-close-search>ปิด</button></div><div class="search-result-grid">${d.items.map(productCardHtml).join('')}</div>`;
     out.querySelector('[data-close-search]')?.addEventListener('click',()=>{out.hidden=true});
