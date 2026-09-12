@@ -61,14 +61,52 @@ function safeImageUrl(value) {
 function autoReason(row) {
   if (row.reason?.trim()) return row.reason.trim();
   if (row.highlight?.trim()) return row.highlight.trim();
+  const discount = Number(row.discount_percent || 0);
+  if (discount >= 20) return `ราคาลดจากราคาอ้างอิงประมาณ ${Math.round(discount)}% จัดว่าเป็นช่วงราคาที่น่าจับตา`;
+  if (discount >= 8) return `ราคาต่ำกว่าราคาอ้างอิงประมาณ ${Math.round(discount)}% ลองเทียบกับโปรและค่าส่งอีกครั้งก่อนซื้อ`;
+  if (discount > 0) return `ส่วนต่างจากราคาอ้างอิงยังไม่มาก หากไม่รีบอาจรอโปรเพิ่มได้`;
   return CATEGORY_COPY[row.category] || CATEGORY_COPY.general;
 }
 
-function autoBadge(row, index) {
-  if (row.badge?.trim()) return row.badge.trim();
-  if (index === 0) return 'แนะนำ';
-  if (index === 1) return 'ตัวเลือกน่าสนใจ';
-  return 'ดูเพิ่ม';
+function autoWorth(row, index = 0) {
+  const d = Number(row.discount_percent || 0);
+  if (d >= 20) return { badge: 'คุ้มมาก', state: 'good' };
+  if (d >= 8) return { badge: 'ราคาดี', state: 'good' };
+  if (d > 0) return { badge: 'ควรรอ', state: 'warn' };
+  if (row.badge?.trim()) return { badge: row.badge.trim(), state: 'neutral' };
+  return { badge: index === 0 ? 'น่าจับตา' : 'เช็กก่อนซื้อ', state: 'neutral' };
+}
+
+function displayPrice(row) {
+  const current = Number(row.current_price);
+  if (Number.isFinite(current) && current > 0) return `฿${new Intl.NumberFormat('th-TH', { maximumFractionDigits: 2 }).format(current)}`;
+  return row.display_price || null;
+}
+
+function previousPrice(row) {
+  const previous = Number(row.previous_price);
+  if (Number.isFinite(previous) && previous > 0) return `฿${new Intl.NumberFormat('th-TH', { maximumFractionDigits: 2 }).format(previous)}`;
+  return null;
+}
+
+function productDto(row, index = 0) {
+  const worth = autoWorth(row, index);
+  return {
+    name: row.name,
+    category: row.category || 'general',
+    display_price: displayPrice(row),
+    previous_price: previousPrice(row),
+    discount_percent: Number(row.discount_percent || 0),
+    reason: autoReason(row),
+    badge: worth.badge,
+    state: worth.state,
+    merchant: row.merchant || row.source_platform || null,
+    image_url: safeImageUrl(row.image_url),
+    image_alt: row.image_alt || row.name,
+    source_platform: row.source_platform || null,
+    last_checked_at: row.last_checked_at || null,
+    go_url: `/go/${encodeURIComponent(row.slug)}`
+  };
 }
 
 async function serveHtmlWithSeo(request, env) {
@@ -76,7 +114,6 @@ async function serveHtmlWithSeo(request, env) {
   const assetResponse = await env.ASSETS.fetch(request);
   const type = assetResponse.headers.get('content-type') || '';
   if (!type.includes('text/html') || assetResponse.status !== 200) return assetResponse;
-
   const canonical = `${url.origin}${canonicalPath(url.pathname)}`;
   return new HTMLRewriter()
     .on('head', {
@@ -94,6 +131,12 @@ function sitemap(origin) {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
 }
 
+const PRODUCT_SELECT = `
+  SELECT id, slug, name, category, tool_key, display_price, reason, image_url, badge, highlight, merchant, image_alt,
+         source_platform, source_url, current_price, previous_price, discount_percent, popularity_score, shop_logo_url, last_checked_at
+  FROM affiliate_products
+`;
+
 export default {
   async fetch(request, env) {
     const url = new URL(request.url);
@@ -110,31 +153,61 @@ export default {
       });
     }
 
+    if (url.pathname === '/api/home-feed' && request.method === 'GET') {
+      try {
+        const rows = await env.DB.prepare(`${PRODUCT_SELECT}
+          WHERE active = 1
+          ORDER BY popularity_score DESC, sort_order ASC, id DESC
+          LIMIT 10
+        `).all();
+        const shopRows = await env.DB.prepare(`
+          SELECT merchant, COUNT(*) AS count
+          FROM affiliate_products
+          WHERE active = 1 AND merchant IS NOT NULL AND TRIM(merchant) <> ''
+          GROUP BY merchant
+          ORDER BY count DESC, merchant ASC
+          LIMIT 8
+        `).all();
+        return json({
+          items: (rows.results || []).map(productDto),
+          shops: (shopRows.results || []).map(r => ({ merchant: r.merchant, count: Number(r.count || 0) }))
+        }, { headers: { 'cache-control': 'public, max-age=180, stale-while-revalidate=900' } });
+      } catch {
+        return json({ items: [], shops: [] }, { headers: { 'cache-control': 'public, max-age=30' } });
+      }
+    }
+
+    if (url.pathname === '/api/product-search' && request.method === 'GET') {
+      const q = (url.searchParams.get('q') || '').trim().slice(0, 180);
+      if (!q) return json({ items: [] });
+      try {
+        const rows = await env.DB.prepare(`${PRODUCT_SELECT}
+          WHERE active = 1 AND (
+            name LIKE '%' || ?1 || '%' OR
+            category LIKE '%' || ?1 || '%' OR
+            merchant LIKE '%' || ?1 || '%' OR
+            source_url = ?1
+          )
+          ORDER BY popularity_score DESC, sort_order ASC, id DESC
+          LIMIT 8
+        `).bind(q).all();
+        return json({ items: (rows.results || []).map(productDto) }, { headers: { 'cache-control': 'no-store' } });
+      } catch {
+        return json({ items: [] }, { headers: { 'cache-control': 'no-store' } });
+      }
+    }
+
     if (url.pathname === '/api/recommendations' && request.method === 'GET') {
       const tool = (url.searchParams.get('tool') || '').slice(0, 60);
       if (!tool) return json({ items: [] });
       try {
-        const rows = await env.DB.prepare(`
-          SELECT id, slug, name, category, display_price, reason, image_url, badge, highlight, merchant, image_alt
-          FROM affiliate_products
+        const rows = await env.DB.prepare(`${PRODUCT_SELECT}
           WHERE tool_key = ?1 AND active = 1
           ORDER BY sort_order ASC, id DESC
           LIMIT 3
         `).bind(tool).all();
-        const items = (rows.results || []).map((r, index) => ({
-          name: r.name,
-          category: r.category || 'general',
-          display_price: r.display_price,
-          reason: autoReason(r),
-          badge: autoBadge(r, index),
-          merchant: r.merchant || null,
-          image_url: safeImageUrl(r.image_url),
-          image_alt: r.image_alt || r.name,
-          go_url: `/go/${encodeURIComponent(r.slug)}`
-        }));
-        return json({ items }, { headers: { 'cache-control': 'public, max-age=300, stale-while-revalidate=3600' } });
+        return json({ items: (rows.results || []).map(productDto) }, { headers: { 'cache-control': 'public, max-age=300, stale-while-revalidate=3600' } });
       } catch {
-        // If the shared D1 Free quota is temporarily exhausted, calculators still work.
         return json({ items: [] }, { headers: { 'cache-control': 'public, max-age=60' } });
       }
     }
@@ -153,16 +226,12 @@ export default {
         return new Response('ระบบลิงก์สินค้าขัดข้องชั่วคราว', { status: 503, headers: { 'x-robots-tag': 'noindex, nofollow' } });
       }
       if (!product) return new Response('ไม่พบลิงก์สินค้า', { status: 404, headers: { 'x-robots-tag': 'noindex, nofollow' } });
-
       try {
         await env.DB.prepare(`
           INSERT INTO click_events(product_id, tool_key, referrer_path)
           VALUES (?1, ?2, ?3)
         `).bind(product.id, product.tool_key, safeReferrerPath(request)).run();
-      } catch {
-        // Never block affiliate redirect just because D1 write quota is exhausted.
-      }
-
+      } catch {}
       return Response.redirect(product.affiliate_url, 302);
     }
 
