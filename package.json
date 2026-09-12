@@ -1,0 +1,14 @@
+{
+  "name": "koommai-v1-seo",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler d1 migrations apply koommai-db --remote && wrangler deploy",
+    "db:local": "wrangler d1 migrations apply koommai-db --local"
+  },
+  "devDependencies": {
+    "wrangler": "^4.0.0"
+  }
+}
