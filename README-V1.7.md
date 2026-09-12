@@ -1,20 +1,33 @@
-# OHOPIAP V1.7 UI
+# โอ้โหเพียบ (OHOPIAP) V1.7.1 UI
 
-Brand rebrand: Koommai / คุ้มไหม? -> OHOPIAP / โอ้โหเพียบ.
+V1.7 rebranded the project from Koommai / คุ้มไหม? to OHOPIAP / โอ้โหเพียบ.
+
+V1.7.1 refines the brand hierarchy for Thai users:
+- Primary public-facing name: `โอ้โหเพียบ`
+- International / domain name: `OHOPIAP`
+- Domain target: `ohopiap.com`
+- Feature proposition remains: `ราคานี้…คุ้มไหม?`
 
 UI direction remains the approved V1.7 visual mockup: cream/navy/orange/green, big price-check hero, Shopee search CTA, trust row, category chips, ranked auto-product cards, shops, tools and transparent data-source section.
 
-## Rebrand scope
-- Change public-facing brand name to OHOPIAP / โอ้โหเพียบ
-- Keep V1.7 UI structure and business features unchanged
+## V1.7.1 scope
+- Prioritize `โอ้โหเพียบ` in the header, footer and public page titles
+- Keep `OHOPIAP` in metadata and as the international/domain identity
+- Keep existing V1.7 layout and business features unchanged
 - Keep existing D1 database, migrations, API and Affiliate logic unchanged
-- Review Worker/deployment name separately before production cutover
+- Keep Cloudflare Worker deployment configuration unchanged
 
-## Files originally changed in V1.7
+## Core files
 - public/index.html
-- public/assets/style.css
-- public/assets/app.js
+- public/site.webmanifest
+- public/about/index.html
+- public/privacy/index.html
+- public/affiliate-disclosure/index.html
+- public/contact/index.html
+- public/tools/
+- public/guides/
+- public/404.html
 
-No D1 migration is required. V1.6 API/D1/Affiliate logic stays unchanged.
+No D1 migration is required. V1.6/V1.7 API, D1 and Affiliate logic stay unchanged.
 
 Preview: append `?preview=1` to the site URL until real products are active.
