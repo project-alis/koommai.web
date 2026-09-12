@@ -1,4 +1,4 @@
--- OHOPIAP Affiliate First Batch — STAGING ONLY
+-- MEEPIAP Affiliate First Batch — STAGING ONLY
 -- ใช้หลังต้องการอัปเดตชื่อ target 5 รายการใน D1 ขณะยังรอ Shopee Affiliate อนุมัติ
 -- ปลอดภัย: ทุกแถวยังคง active=0 และไม่เปลี่ยน affiliate_url จากค่า pending
 -- ห้ามเปิด active=1 จนกว่าจะมี Affiliate URL จริง + รูป/ราคา/ร้าน/ลิงก์สินค้าที่ตรวจแล้ว

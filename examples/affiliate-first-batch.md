@@ -1,8 +1,8 @@
-# OHOPIAP — Affiliate First Batch (Staging)
+# MEEPIAP — Affiliate First Batch (Staging)
 
 สถานะ: **PREPARED / NOT LIVE**
 
-ชุดนี้ใช้เตรียมสินค้า 5 รายการแรกสำหรับทดสอบ flow ของ OHOPIAP ระหว่างรอ Shopee Affiliate อนุมัติ
+ชุดนี้ใช้เตรียมสินค้า 5 รายการแรกสำหรับทดสอบ flow ของ MEEPIAP ระหว่างรอ Shopee Affiliate อนุมัติ
 
 > กติกา: ยังไม่เปิด `active=1`, ยังไม่ใส่ Affiliate URL ปลอม, และราคาด้านล่างเป็นเพียง research snapshot ต้องตรวจใหม่ก่อนเปิดจริง
 

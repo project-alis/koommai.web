@@ -1,18 +1,18 @@
-# โอ้โหเพียบ (OHOPIAP) V1.7.1 UI
+# มีเพียบ (MEEPIAP) V1.7.1 UI
 
-V1.7 rebranded the project from Koommai / คุ้มไหม? to OHOPIAP / โอ้โหเพียบ.
+V1.7 rebranded the project from Koommai / คุ้มไหม? to MEEPIAP / มีเพียบ.
 
 V1.7.1 refines the brand hierarchy for Thai users:
-- Primary public-facing name: `โอ้โหเพียบ`
-- International / domain name: `OHOPIAP`
-- Domain target: `ohopiap.com`
+- Primary public-facing name: `มีเพียบ`
+- International / domain name: `MEEPIAP`
+- Domain target: `meepiap.com`
 - Feature proposition remains: `ราคานี้…คุ้มไหม?`
 
 UI direction remains the approved V1.7 visual mockup: cream/navy/orange/green, big price-check hero, Shopee search CTA, trust row, category chips, ranked auto-product cards, shops, tools and transparent data-source section.
 
 ## V1.7.1 scope
-- Prioritize `โอ้โหเพียบ` in the header, footer and public page titles
-- Keep `OHOPIAP` in metadata and as the international/domain identity
+- Prioritize `มีเพียบ` in the header, footer and public page titles
+- Keep `MEEPIAP` in metadata and as the international/domain identity
 - Keep existing V1.7 layout and business features unchanged
 - Keep existing D1 database, migrations, API and Affiliate logic unchanged
 - Keep Cloudflare Worker deployment configuration unchanged
