@@ -3,148 +3,131 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>OHOPIAP | เช็กราคา Shopee ก่อนซื้อ รู้ก่อนจ่าย</title>
-  <meta name="description" content="OHOPIAP (โอ้โหเพียบ) ช่วยเช็กว่าราคานี้คุ้มไหม ค้นหาสินค้าหรือวางลิงก์ Shopee พร้อมดูส่วนลด เทียบราคาต่อหน่วย และคำนวณกำไร ฟรี ไม่ต้องสมัคร">
+  <title>OHOPIAP | ค้นทีเดียว เจอเพียบ — ของ ร้าน ซ่อม มือสอง ของฟรี</title>
+  <meta name="description" content="OHOPIAP (โอ้โหเพียบ) ช่วยค้นของ ร้าน บริการซ่อม ของมือสอง ของฟรี ของกิน และดีลออนไลน์จากจุดเดียว — ค้นทีเดียว เจอเพียบ">
   <meta name="robots" content="index,follow,max-image-preview:large,max-snippet:-1,max-video-preview:-1">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="th_TH">
-  <meta property="og:title" content="OHOPIAP — ราคานี้…คุ้มไหม? เช็กก่อนซื้อ รู้ก่อนจ่าย">
-  <meta property="og:description" content="โอ้โหเพียบกับเครื่องมือช่วยเช็กก่อนซื้อ ค้นหาสินค้าหรือวางลิงก์ Shopee แล้วดูง่าย ๆ ว่า ซื้อเลย หรือ รอก่อน พร้อมเครื่องมือช่วยคิดความคุ้ม">
+  <meta property="og:title" content="OHOPIAP — ค้นทีเดียว เจอเพียบ">
+  <meta property="og:description" content="หาเรื่องเดียว แล้วเห็นหลายทางเลือก: ของใหม่ ร้าน บริการซ่อม มือสอง ของฟรี และของกิน">
   <link rel="stylesheet" href="/assets/style.css">
-  <style>
-    /* Mobile product feed: stack cards vertically instead of horizontal carousel */
-    @media (max-width:780px){
-      .v17-hot-grid{
-        display:grid;
-        grid-template-columns:1fr;
-        overflow-x:visible;
-        scroll-snap-type:none;
-        gap:14px;
-        padding-bottom:0;
-        margin-right:0;
-        padding-right:0;
-      }
-      .v17-home .deal-card{
-        width:100%;
-        max-width:none;
-        flex:none;
-        scroll-snap-align:none;
-      }
-    }
-    @media (max-width:430px){
-      .v17-home .deal-card{flex-basis:auto}
-    }
-  </style>
   <link rel="icon" href="/assets/favicon.svg">
   <link rel="manifest" href="/site.webmanifest">
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"OHOPIAP","alternateName":"โอ้โหเพียบ","inLanguage":"th","description":"ผู้ช่วยเช็กความคุ้มก่อนซื้อ ก่อนขาย และก่อนจ่ายเงิน"}</script>
+  <style>
+    .discovery-home{background:#fffaf6;color:#1c2730}.discovery-main{max-width:1180px;margin:auto;padding:0 20px 70px}
+    .discovery-hero{margin:0 -20px;padding:64px 20px 34px;background:radial-gradient(circle at 12% 0%,rgba(255,111,45,.12),transparent 31%),radial-gradient(circle at 90% 10%,rgba(17,151,103,.10),transparent 30%),linear-gradient(180deg,#fff9f4,#fff);border-bottom:1px solid #f1e6df}
+    .discovery-hero-inner{max-width:980px;margin:auto;text-align:center}.discovery-kicker{display:inline-flex;padding:7px 12px;border-radius:999px;background:#fff0e9;color:#db4313;font-weight:900;font-size:.84rem}
+    .discovery-hero h1{font-size:clamp(3rem,8vw,6rem);line-height:.98;margin:.18em 0 .18em;letter-spacing:-.06em;color:#203444}.discovery-hero h1 span{color:#f05a24}.discovery-lead{max-width:760px;margin:0 auto;color:#65737d;font-size:1.05rem}
+    .discovery-search{max-width:820px;margin:28px auto 0;display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;background:#fff;border:1px solid #e9e2dc;border-radius:20px;padding:7px;box-shadow:0 18px 50px rgba(47,58,65,.10)}
+    .discovery-search input{border:0;outline:0;min-width:0;padding:10px 14px;background:transparent;font-size:1.03rem}.discovery-search button{min-height:48px;border-radius:14px;box-shadow:none}.near-button{background:#fff!important;color:#42525d!important;border:1px solid #e5e6e5!important}.near-button.active{background:#eaf7f0!important;color:#08734a!important;border-color:#b8ddca!important}
+    .near-status{display:block;min-height:1.4em;margin:7px auto 0;color:#7d8991;font-size:.78rem}
+    .discovery-types{display:flex;justify-content:center;gap:7px;flex-wrap:wrap;margin:18px auto 0}.discovery-types button{min-height:38px;padding:7px 12px;background:#fff;color:#51616c;border:1px solid #ece4de;box-shadow:none;border-radius:999px;font-size:.84rem}.discovery-types button.active{background:#203444;color:#fff;border-color:#203444}
+    .world-section{padding:34px 0 10px}.world-head{text-align:center;margin-bottom:18px}.world-head h2{font-size:clamp(1.8rem,4vw,2.7rem);margin:0}.world-head p{color:#74818a;margin:5px 0 0}.world-grid{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}.world-card{appearance:none;text-align:left;min-height:150px;padding:18px;border:1px solid #ece6e1;border-radius:20px;background:#fff;color:#243540;box-shadow:0 8px 25px rgba(42,54,60,.055);cursor:pointer}.world-card:hover{transform:translateY(-2px);border-color:#f2bca4}.world-card span{font-size:2rem}.world-card b{display:block;font-size:1.03rem;margin:9px 0 3px}.world-card small{display:block;color:#7a8891;line-height:1.4}
+    .discovery-result{margin:24px 0 10px;padding:18px;border:1px solid #ebe5df;border-radius:24px;background:#fff}.discovery-result[hidden]{display:none}.discover-result-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:14px}.discover-result-head b{display:block;font-size:1.1rem}.discover-result-head span{display:block;color:#7a8790;font-size:.86rem}.discover-result-head button{min-height:38px;padding:7px 12px;background:#f5f5f4;color:#52606a;box-shadow:none}.discover-message{display:flex;flex-direction:column;gap:3px;padding:14px;text-align:center}.discover-message span{color:#7d8991}
+    .discover-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.discover-card{overflow:hidden;border:1px solid #e8e8e6;border-radius:18px;background:#fff;display:flex;flex-direction:column}.discover-card-media{position:relative;aspect-ratio:16/10;background:#f3f5f4;overflow:hidden}.discover-card-media img{width:100%;height:100%;object-fit:cover;display:block}.discover-card-placeholder{width:100%;height:100%;display:grid;place-items:center;font-size:3.3rem;background:linear-gradient(145deg,#f8f5f1,#edf5f0)}.discover-kind{position:absolute;left:9px;top:9px;padding:5px 8px;border-radius:999px;background:rgba(255,255,255,.94);font-size:.73rem;font-weight:900;box-shadow:0 4px 12px rgba(0,0,0,.08)}.discover-card-body{padding:14px;display:flex;flex-direction:column;flex:1}.discover-card-top{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:24px}.discover-badge{font-size:.72rem;font-weight:850;color:#08734a;background:#eaf7f0;padding:4px 7px;border-radius:999px}.discover-price{color:#ed541f}.discover-card h3{font-size:1.02rem;line-height:1.35;margin:7px 0}.discover-card p{color:#687780;font-size:.88rem;line-height:1.5;margin:0 0 10px;flex:1}.discover-meta{display:flex;gap:8px;flex-wrap:wrap;color:#6e7e87;font-size:.78rem;margin-bottom:5px}.discover-card small{color:#8b969d}.discover-action{display:inline-flex;justify-content:center;align-items:center;margin-top:12px;min-height:42px;border-radius:11px;background:#203444;color:#fff;text-decoration:none;font-weight:900;font-size:.86rem}.discover-action.disabled{background:#eef0f1;color:#78848c}
+    .product-zone{margin-top:42px;padding-top:6px}.product-search-mini{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:7px;max-width:720px;margin:15px 0 18px}.product-search-mini input{min-width:0;border:1px solid #ddd;border-radius:13px;padding:10px 12px}.product-search-mini button{min-height:46px;padding:8px 13px}.product-search-mini .paste-button{background:#fff;color:#43545f;border:1px solid #ddd;box-shadow:none}
+    .brand-note{font-size:.82rem;color:#8a949a;margin-top:18px}.discovery-home footer{background:#182a39;color:#dce3e8}.discovery-home footer a{color:#fff}
+    @media(max-width:1000px){.world-grid{grid-template-columns:repeat(3,1fr)}.discover-grid{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:780px){.discovery-main{padding:0 14px 50px}.discovery-hero{margin:0 -14px;padding:42px 14px 26px}.discovery-hero h1{font-size:clamp(3rem,16vw,4.8rem)}.discovery-search{grid-template-columns:minmax(0,1fr) auto}.discovery-search .near-button{grid-column:1/-1}.world-grid{grid-template-columns:repeat(2,1fr)}.world-card{min-height:132px;padding:15px}.discover-grid{grid-template-columns:1fr}.product-search-mini{grid-template-columns:minmax(0,1fr) auto}.product-search-mini .paste-button{display:none}.v17-hot-grid{display:grid!important;grid-template-columns:1fr!important;overflow-x:visible!important;scroll-snap-type:none!important;gap:14px!important;padding-bottom:0!important;margin-right:0!important;padding-right:0!important}.v17-home .deal-card{width:100%!important;max-width:none!important;flex:none!important;scroll-snap-align:none!important}}
+    @media(max-width:430px){.world-grid{grid-template-columns:1fr 1fr}.world-card b{font-size:.94rem}.world-card small{font-size:.73rem}}
+  </style>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"OHOPIAP","alternateName":"โอ้โหเพียบ","inLanguage":"th","description":"ค้นทีเดียว เจอเพียบ — ของ ร้าน บริการซ่อม มือสอง ของฟรี ของกิน และดีลออนไลน์"}</script>
 </head>
-<body class="consumer-home v17-home">
+<body class="consumer-home v17-home discovery-home">
 <header class="v17-header">
   <nav class="nav v17-nav" aria-label="เมนูหลัก">
     <a class="brand v17-brand" href="/" aria-label="OHOPIAP หน้าแรก"><span>OHO</span>PIAP</a>
     <div class="navlinks v17-navlinks">
       <a class="active" href="/">หน้าแรก</a>
-      <a href="#hot-products">สินค้าน่าจับตา</a>
-      <a href="/tools/promo-check/">เช็กโปร</a>
-      <a href="/tools/unit-price/">เทียบราคา</a>
-      <a href="/tools/profit-online/">คำนวณกำไร</a>
+      <a href="#worlds">หาอะไรได้บ้าง</a>
+      <a href="#products">ของเพียบ</a>
+      <a href="/tools/">เครื่องมือ</a>
       <a href="/guides/">บทความ</a>
     </div>
-    <a class="v17-nav-cta" href="#price-check">ลองเช็กเลย</a>
+    <a class="v17-nav-cta" href="#discover">ค้นเลย</a>
   </nav>
 </header>
 
-<main class="consumer-main v17-main">
-  <section class="v17-hero" id="price-check" aria-labelledby="hero-title">
-    <div class="v17-dot-grid" aria-hidden="true"></div>
-    <div class="v17-hero-grid">
-      <div class="v17-hero-copy">
-        <div class="v17-eyebrow">เช็กก่อนซื้อ <i>•</i> รู้ก่อนจ่าย <i>•</i> ไม่ต้องเดาเอง</div>
-        <h1 id="hero-title">ราคานี้…<span>คุ้มไหม?</span></h1>
-        <p class="v17-lead">ค้นหาสินค้าหรือวางลิงก์ Shopee แล้วเช็กง่าย ๆ ว่า <b>“ซื้อเลย”</b> หรือ <b>“รอก่อน”</b> พร้อมดูส่วนลดและความคุ้มในที่เดียว</p>
+<main class="discovery-main">
+  <section class="discovery-hero" id="discover" aria-labelledby="hero-title">
+    <div class="discovery-hero-inner">
+      <span class="discovery-kicker">OHOPIAP • โอ้โหเพียบ</span>
+      <h1 id="hero-title">ค้นทีเดียว<br><span>เจอเพียบ</span></h1>
+      <p class="discovery-lead">หาเรื่องเดียว แล้วดูหลายทางเลือกในที่เดียว — ของใหม่ ร้าน บริการซ่อม มือสอง ของฟรี ของกิน และดีลออนไลน์</p>
 
-        <form class="product-search v17-search" id="home-search-form" role="search" autocomplete="off">
-          <span class="v17-search-icon" aria-hidden="true">⌕</span>
-          <input id="home-search" name="q" type="search" placeholder="ค้นหาสินค้า หรือวางลิงก์ Shopee ที่นี่" aria-label="ค้นหาสินค้าหรือวางลิงก์ Shopee">
-          <button class="paste-button v17-paste" type="button" id="paste-link">วาง</button>
-          <button class="search-button v17-search-button" type="submit">เช็กว่าคุ้มไหม <span aria-hidden="true">→</span></button>
-        </form>
+      <form class="discovery-search" id="discover-search-form" role="search" autocomplete="off">
+        <input name="q" type="search" placeholder="วันนี้กำลังหาอะไร? เช่น แอร์, โต๊ะทำงาน, ร้านซ่อมมือถือ" aria-label="ค้นหาใน OHOPIAP">
+        <button type="submit">ค้นเพียบ →</button>
+        <button type="button" class="near-button" id="near-me">📍 ใกล้ฉัน</button>
+      </form>
+      <small class="near-status" id="near-status"></small>
 
-        <div class="v17-trust-row" aria-label="จุดเด่นของบริการ">
-          <span><b>✓</b> ใช้ฟรี</span>
-          <span><b>✓</b> ไม่ต้องสมัคร</span>
-          <span><b>✓</b> รู้ผลทันที</span>
-        </div>
-        <div id="home-search-result" class="home-search-result" hidden></div>
+      <div class="discovery-types" aria-label="ประเภทการค้นหา">
+        <button type="button" data-discovery-type="all" class="active">🔎 ทั้งหมด</button>
+        <button type="button" data-discovery-type="product">🛒 ของเพียบ</button>
+        <button type="button" data-discovery-type="service">🔧 ซ่อมเพียบ</button>
+        <button type="button" data-discovery-type="secondhand">♻️ มือสองเพียบ</button>
+        <button type="button" data-discovery-type="free">🎁 ฟรีเพียบ</button>
+        <button type="button" data-discovery-type="shop">🏪 ร้านเพียบ</button>
+        <button type="button" data-discovery-type="food">🍜 กินเพียบ</button>
       </div>
+      <p class="brand-note">กำลังค้นใน: <b id="discovery-type-label">ทั้งหมด</b></p>
+    </div>
+  </section>
 
-      <div class="v17-hero-visual" aria-hidden="true">
-        <div class="v17-orbit v17-orbit-a"></div>
-        <div class="v17-orbit v17-orbit-b"></div>
-        <div class="v17-phone-card">
-          <div class="v17-phone-notch"></div>
-          <div class="v17-bag">✓</div>
-          <b>OHOPIAP</b>
-          <small>โอ้โหเพียบ • เช็กก่อนซื้อ</small>
-        </div>
-        <div class="v17-cart-mascot">
-          <div class="v17-cart-face">◕‿◕</div>
-          <div class="v17-cart-handle"></div>
-          <span class="v17-wheel one"></span><span class="v17-wheel two"></span>
-        </div>
-        <div class="v17-feature-card fc-one"><span>↗</span><div><b>ดูราคาย้อนหลัง</b><small>ช่วยตัดสินใจง่ายขึ้น</small></div></div>
-        <div class="v17-feature-card fc-two"><span>%</span><div><b>คำนวณส่วนลด</b><small>ดูส่วนลดสุทธิจริง</small></div></div>
-        <div class="v17-feature-card fc-three"><span>⚖</span><div><b>เทียบราคาต่อหน่วย</b><small>ซื้อขนาดไหนคุ้มสุด</small></div></div>
-      </div>
+  <section class="discovery-result" id="discovery-result" hidden aria-live="polite"></section>
+
+  <section class="world-section" id="worlds" aria-labelledby="world-title">
+    <div class="world-head"><h2 id="world-title">อยากหาอะไร? มีให้ค้นเพียบ</h2><p>เลือกโลกที่สนใจ แล้ว OHOPIAP จะใช้คำค้นเดียวกันหาทางเลือกให้</p></div>
+    <div class="world-grid">
+      <button class="world-card" type="button" data-discovery-preset="product"><span>🛒</span><b>ของเพียบ</b><small>ของใหม่ ดีล ราคา และ Affiliate</small></button>
+      <button class="world-card" type="button" data-discovery-preset="service"><span>🔧</span><b>ซ่อมเพียบ</b><small>ร้านซ่อม ช่าง และบริการใกล้ตัว</small></button>
+      <button class="world-card" type="button" data-discovery-preset="secondhand"><span>♻️</span><b>มือสองเพียบ</b><small>ของใช้ต่อและประกาศมือสอง</small></button>
+      <button class="world-card" type="button" data-discovery-preset="free"><span>🎁</span><b>ฟรีเพียบ</b><small>ของแจก ของส่งต่อ และกิจกรรมฟรี</small></button>
+      <button class="world-card" type="button" data-discovery-preset="shop"><span>🏪</span><b>ร้านเพียบ</b><small>ร้านและธุรกิจที่เกี่ยวข้องกับสิ่งที่หา</small></button>
+      <button class="world-card" type="button" data-discovery-preset="food"><span>🍜</span><b>กินเพียบ</b><small>ร้านอาหาร ของกิน และตัวเลือกใกล้ฉัน</small></button>
+    </div>
+  </section>
+
+  <section class="market-section v17-market product-zone" id="products" aria-labelledby="hot-title">
+    <div class="market-head v17-section-head">
+      <div><span class="section-kicker">ของเพียบ • ONLINE DEALS</span><h2 id="hot-title">สินค้าน่าจับตา <span aria-hidden="true">🔥</span></h2><p>ส่วนนี้ต่อยอดจากระบบ Affiliate เดิมของ OHOPIAP และยังใช้ D1/click tracking ชุดเดิม</p></div>
+      <a href="/tools/" class="text-link">ดูเครื่องมือทั้งหมด →</a>
     </div>
 
-    <div class="category-chips v17-categories" aria-label="หมวดที่สนใจ">
-      <button type="button" data-home-category="all" class="active">🔥 ดีลน่าจับตา</button>
+    <form class="product-search-mini" id="home-search-form" role="search" autocomplete="off">
+      <input id="home-search" name="q" type="search" placeholder="ค้นหาเฉพาะสินค้า หรือวางลิงก์ Shopee" aria-label="ค้นหาเฉพาะสินค้า">
+      <button class="paste-button" type="button" id="paste-link">วาง</button>
+      <button type="submit">ค้นสินค้า</button>
+    </form>
+    <div id="home-search-result" class="home-search-result" hidden></div>
+
+    <div class="category-chips v17-categories" aria-label="หมวดสินค้า">
+      <button type="button" data-home-category="all" class="active">🔥 ทั้งหมด</button>
       <button type="button" data-home-category="powerbank">📱 มือถือ & แก็ดเจ็ต</button>
       <button type="button" data-home-category="office">💻 คอมพิวเตอร์ & ไอที</button>
       <button type="button" data-home-category="household">🏠 ของใช้ในบ้าน</button>
       <button type="button" data-home-category="packaging">📦 ร้านออนไลน์</button>
-      <button type="button" data-home-category="personal">🧴 สุขภาพ & ของใช้ส่วนตัว</button>
+      <button type="button" data-home-category="personal">🧴 ของใช้ส่วนตัว</button>
     </div>
-  </section>
 
-  <section class="market-section v17-market" id="hot-products" aria-labelledby="hot-title">
-    <div class="market-head v17-section-head">
-      <div><span class="section-kicker">TRENDING PRODUCTS</span><h2 id="hot-title">สินค้าน่าจับตา <span aria-hidden="true">🔥</span></h2><p>สินค้าที่ระบบมีข้อมูลและกำลังน่าดู เช็กตัวเลขก่อนกดซื้อทุกครั้ง</p></div>
-      <a href="/tools/" class="text-link">ดูเครื่องมือทั้งหมด →</a>
-    </div>
     <div class="feed-status" id="feed-status" hidden></div>
     <div class="hot-grid v17-hot-grid" id="home-product-grid" aria-live="polite"></div>
     <div class="feed-empty v17-feed-empty" id="home-feed-empty" hidden>
       <div class="empty-icon">🛍️</div>
-      <h3>หน้า Auto Product พร้อมแล้ว</h3>
-      <p>เมื่อสินค้า Affiliate จริงถูกเปิดใช้งาน รูป ชื่อ ราคา ร้าน และป้าย “คุ้มไหม?” จะขึ้นตรงนี้อัตโนมัติ</p>
-      <a href="/?preview=1#hot-products" class="button secondary">ดูตัวอย่าง UI</a>
-    </div>
-  </section>
-
-  <section class="v17-how" aria-labelledby="how-title">
-    <div class="v17-how-intro">
-      <span class="section-kicker">ทำไมต้องใช้ OHOPIAP?</span>
-      <h2 id="how-title">เช็กก่อนซื้อ ใช้เงินอย่างมีเหตุผล</h2>
-      <p>เราออกแบบให้ดูง่าย ไม่ต้องเก่งตัวเลขก็ใช้ได้</p>
-    </div>
-    <div class="v17-how-grid">
-      <article><span>1</span><div><b>ค้นหาหรือวางลิงก์</b><small>ใส่ชื่อสินค้าหรือลิงก์ Shopee ที่สนใจ</small></div></article>
-      <article><span>2</span><div><b>ระบบช่วยวิเคราะห์</b><small>ดูราคา ส่วนลด และข้อมูลที่ระบบมี</small></div></article>
-      <article><span>3</span><div><b>รู้แล้วว่าคุ้มไหม</b><small>สรุปให้เห็นง่ายว่า ซื้อเลย หรือควรรอ</small></div></article>
-      <article><span>4</span><div><b>ค่อยไปซื้อเมื่อพร้อม</b><small>ถ้ามี Affiliate link จะพาไปหน้าสินค้าจริง</small></div></article>
+      <h3>ของเพียบพร้อมรับสินค้าจริง</h3>
+      <p>เมื่อเปิดสินค้า Affiliate จริง รูป ชื่อ ราคา ร้าน และปุ่มไปซื้อจะขึ้นอัตโนมัติ</p>
+      <a href="/?preview=1#products" class="button secondary">ดูตัวอย่าง UI</a>
     </div>
   </section>
 
   <section class="market-section shop-section v17-shops" aria-labelledby="shop-title">
-    <div class="market-head v17-section-head"><div><span class="section-kicker">POPULAR SHOPS</span><h2 id="shop-title">ร้านค้ายอดนิยม</h2><p>จัดจากร้านที่มีสินค้าที่เปิดใช้งานอยู่ในระบบ ไม่ใช่การรับรองอย่างเป็นทางการ</p></div></div>
+    <div class="market-head v17-section-head"><div><span class="section-kicker">ร้านจากสินค้าที่มีข้อมูล</span><h2 id="shop-title">ร้านเพียบจากฝั่ง Marketplace</h2><p>ร้านจากสินค้า Affiliate ที่เปิดใช้งานจะรวมขึ้นตรงนี้อัตโนมัติ</p></div></div>
     <div class="shop-grid" id="home-shop-grid"></div>
   </section>
 
   <section class="tool-shortcuts v17-tools" aria-labelledby="tool-title">
-    <div class="market-head v17-section-head"><div><span class="section-kicker">เครื่องมือของ OHOPIAP</span><h2 id="tool-title">อยากรู้ให้ชัด ลองคำนวณตรง ๆ</h2></div></div>
+    <div class="market-head v17-section-head"><div><span class="section-kicker">TOOLS</span><h2 id="tool-title">เครื่องมือช่วยคิดก่อนจ่าย</h2></div></div>
     <div class="tool-shortcut-grid">
       <a href="/tools/promo-check/"><span>🛒</span><div><b>โปรนี้คุ้มจริงไหม?</b><small>รวมโค้ด ส่วนลด ค่าส่ง และ Cashback</small></div><i>→</i></a>
       <a href="/tools/unit-price/"><span>⚖️</span><div><b>อันไหนถูกกว่าจริง?</b><small>เทียบราคาต่อชิ้น ต่อกรัม ต่อ ml</small></div><i>→</i></a>
@@ -153,24 +136,19 @@
   </section>
 
   <section class="source-section v17-source" aria-labelledby="source-title">
-    <div class="market-head v17-section-head"><div><span class="section-kicker">โปร่งใสเรื่องข้อมูล</span><h2 id="source-title">ข้อมูลสินค้าและราคามาจากไหน?</h2></div></div>
+    <div class="market-head v17-section-head"><div><span class="section-kicker">หลักการของ OHOPIAP</span><h2 id="source-title">เราไม่จำเป็นต้องเป็นเจ้าของข้อมูลทุกอย่าง</h2></div></div>
     <div class="source-grid">
-      <article><span>1</span><h3>ข้อมูลที่ได้รับสิทธิ์ใช้งาน</h3><p>ระบบรองรับชื่อสินค้า รูป ราคา ร้านค้า และลิงก์จากแหล่ง Affiliate/Marketplace ที่อนุญาต</p></article>
-      <article><span>2</span><h3>เก็บราคาและเวลาที่ตรวจ</h3><p>ข้อมูลล่าสุดถูกเก็บใน D1 เพื่อให้หน้าเว็บสร้างการ์ดและข้อความอัตโนมัติ</p></article>
-      <article><span>3</span><h3>สรุปเป็นภาษาคนทั่วไป</h3><p>ใช้กติกาจากส่วนลดและราคาอ้างอิง เพื่อแสดง “คุ้มมาก”, “ราคาดี” หรือ “ควรรอ”</p></article>
+      <article><span>1</span><h3>รวมทางเลือก</h3><p>หนึ่งคำค้นสามารถพบสินค้า ร้าน บริการ มือสอง ฟรี หรืออาหารจากข้อมูลที่เราได้รับสิทธิ์หรือเจ้าของส่งเข้ามา</p></article>
+      <article><span>2</span><h3>เก็บข้อมูลที่จำเป็น</h3><p>OHOPIAP เก็บข้อมูลแกนกลาง เช่น ประเภท พิกัด หมวด และลิงก์ต้นทาง โดยไม่ก๊อปปี้ข้อมูลจากแพลตฟอร์มอื่นแบบไร้สิทธิ์</p></article>
+      <article><span>3</span><h3>ส่งผู้ใช้ไปแหล่งจริง</h3><p>เมื่อสนใจ ผู้ใช้ไปยัง Marketplace ร้าน หรือประกาศต้นทาง และเราสามารถวัดการคลิกเพื่อพัฒนาผลค้นต่อไป</p></article>
     </div>
-    <p class="source-note">OHOPIAP (โอ้โหเพียบ) ไม่ใช่เว็บไซต์ทางการของ Shopee ราคาจริงและเงื่อนไขอาจเปลี่ยนได้ตลอดเวลา กรุณาตรวจสอบที่หน้าสินค้าก่อนชำระเงิน</p>
-  </section>
-
-  <section class="seo-story v17-seo">
-    <h2>ลดเยอะ ไม่ได้แปลว่าคุ้มเสมอไป</h2>
-    <p>บางโปรลดเปอร์เซ็นต์สูงแต่ติดเพดาน บางแพ็กดูถูกแต่ราคาต่อหน่วยแพงกว่า และบางสินค้าลดจากราคาป้ายที่สูงเกินจริง OHOPIAP จึงช่วยให้คุณเห็นตัวเลขก่อนตัดสินใจว่า “คุ้มไหม?” และก่อนจ่ายเงินจริง</p>
   </section>
 </main>
 
 <footer>
-  <div class="footer"><div><b>OHOPIAP</b> (โอ้โหเพียบ) เครื่องมือช่วยคิดก่อนซื้อ ก่อนขาย และก่อนจ่าย ข้อมูลราคาและโปรโมชันจริงอาจเปลี่ยนตามเวลา</div><div class="footer-links"><a href="/about/">เกี่ยวกับเรา</a><a href="/privacy/">ความเป็นส่วนตัว</a><a href="/affiliate-disclosure/">Affiliate</a><a href="/contact/">ติดต่อ</a></div></div>
+  <div class="footer"><div><b>OHOPIAP</b> (โอ้โหเพียบ) — ค้นทีเดียว เจอเพียบ ข้อมูลราคา ร้าน และบริการอาจเปลี่ยนได้ ควรตรวจสอบกับแหล่งต้นทางก่อนตัดสินใจ</div><div class="footer-links"><a href="/about/">เกี่ยวกับเรา</a><a href="/privacy/">ความเป็นส่วนตัว</a><a href="/affiliate-disclosure/">Affiliate</a><a href="/contact/">ติดต่อ</a></div></div>
 </footer>
+<script src="/assets/discovery.js" defer></script>
 <script src="/assets/app.js" defer></script>
 </body>
 </html>
