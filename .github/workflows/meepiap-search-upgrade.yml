@@ -1,0 +1,40 @@
+name: Upgrade MEEPIAP discovery search
+
+on:
+  push:
+    branches:
+      - meepiap-discovery-v1
+
+permissions:
+  contents: write
+
+jobs:
+  upgrade-search:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: meepiap-discovery-v1
+          fetch-depth: 0
+
+      - name: Apply search patch
+        run: python3 scripts/upgrade-discovery-search.py
+
+      - name: Validate worker syntax
+        run: |
+          node --check worker/index.js
+          grep -q "discovery_fts" worker/index.js
+          grep -q "latRaw" worker/index.js
+
+      - name: Commit search upgrade
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add worker/index.js
+          if git diff --cached --quiet; then
+            echo "Search upgrade already applied"
+            exit 0
+          fi
+          git commit -m "Scale discovery search with FTS5 and geo bounds"
+          git push origin HEAD:meepiap-discovery-v1
