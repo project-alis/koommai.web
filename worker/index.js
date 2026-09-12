@@ -248,9 +248,12 @@ const DISCOVERY_SELECT = `SELECT ${DISCOVERY_FIELDS} FROM discovery_entities`;
 async function discover(request, env, url) {
   const q = (url.searchParams.get('q') || '').trim().slice(0, 120);
   const type = (url.searchParams.get('type') || 'all').trim().slice(0, 24);
-  const lat = Number(url.searchParams.get('lat'));
-  const lng = Number(url.searchParams.get('lng'));
-  const hasLocation = Number.isFinite(lat) && Number.isFinite(lng);
+  const latRaw = url.searchParams.get('lat');
+  const lngRaw = url.searchParams.get('lng');
+  const lat = latRaw === null ? Number.NaN : Number(latRaw);
+  const lng = lngRaw === null ? Number.NaN : Number(lngRaw);
+  const hasLocation = Number.isFinite(lat) && Number.isFinite(lng)
+    && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
   const items = [];
 
   if (type === 'all' || type === 'product') {
