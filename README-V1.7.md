@@ -1,8 +1,16 @@
-# คุ้มไหม? V1.7 UI
+# OHOPIAP V1.7 UI
 
-UI direction approved from the visual mockup: cream/navy/orange/green, big “ราคานี้…คุ้มไหม?” hero, Shopee search CTA, trust row, category chips, ranked auto-product cards, shops, tools and transparent data-source section.
+Brand rebrand: Koommai / คุ้มไหม? -> OHOPIAP / โอ้โหเพียบ.
 
-## Files changed
+UI direction remains the approved V1.7 visual mockup: cream/navy/orange/green, big price-check hero, Shopee search CTA, trust row, category chips, ranked auto-product cards, shops, tools and transparent data-source section.
+
+## Rebrand scope
+- Change public-facing brand name to OHOPIAP / โอ้โหเพียบ
+- Keep V1.7 UI structure and business features unchanged
+- Keep existing D1 database, migrations, API and Affiliate logic unchanged
+- Review Worker/deployment name separately before production cutover
+
+## Files originally changed in V1.7
 - public/index.html
 - public/assets/style.css
 - public/assets/app.js
