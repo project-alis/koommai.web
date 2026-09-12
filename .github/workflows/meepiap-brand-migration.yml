@@ -28,6 +28,8 @@ jobs:
               ('Ohopiap', 'Meepiap'),
               ('ohopiap', 'meepiap'),
               ('โอ้โหเพียบ', 'มีเพียบ'),
+              ('<span>OHO</span>PIAP', '<span>MEE</span>PIAP'),
+              ('ฐานคุ้มไหม?', 'MEEPIAP'),
           ]
           allowed = {'.md', '.txt', '.html', '.js', '.json', '.jsonc', '.svg', '.sql', '.css', '.webmanifest'}
           skip_parts = {'.git', 'node_modules'}
@@ -44,7 +46,6 @@ jobs:
               if new != text:
                   path.write_text(new, encoding='utf-8')
 
-          # Custom domain routes: keep the existing D1 database name unchanged.
           wrangler = Path('wrangler.jsonc')
           text = wrangler.read_text(encoding='utf-8')
           if '"routes"' not in text:
@@ -59,7 +60,6 @@ jobs:
               text = text.replace(needle, routes, 1)
           wrangler.write_text(text, encoding='utf-8')
 
-          # Make the apex domain canonical: www and workers.dev redirect to meepiap.com.
           worker = Path('worker/index.js')
           text = worker.read_text(encoding='utf-8')
           needle = "  async fetch(request, env) {\n    const url = new URL(request.url);\n"
@@ -77,11 +77,11 @@ jobs:
 
       - name: Brand audit
         run: |
-          if grep -RIn --exclude-dir=.git --exclude=meepiap-brand-migration.yml -E 'OHOPIAP|Ohopiap|ohopiap|โอ้โหเพียบ' .; then
+          if grep -RIn --exclude-dir=.git --exclude=meepiap-brand-migration.yml -E 'OHOPIAP|Ohopiap|ohopiap|โอ้โหเพียบ|<span>OHO</span>PIAP|ฐานคุ้มไหม\?' .; then
             echo 'Legacy brand references remain.'
             exit 1
           fi
-          grep -RIn --exclude-dir=.git -E 'MEEPIAP|มีเพียบ' public README*.md README*.txt package.json wrangler.jsonc | head -80
+          grep -RIn --exclude-dir=.git -E 'MEEPIAP|มีเพียบ' public README*.md README*.txt package.json wrangler.jsonc | head -100
 
       - name: Syntax checks
         run: |
@@ -99,5 +99,5 @@ jobs:
             echo "No migration changes needed"
             exit 0
           fi
-          git commit -m "Rebrand to MEEPIAP and configure meepiap.com"
+          git commit -m "Finish MEEPIAP brand cleanup"
           git push origin HEAD:meepiap-discovery-v1
