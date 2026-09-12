@@ -186,6 +186,29 @@ function distanceKm(aLat, aLng, bLat, bLng) {
   return 6371 * 2 * Math.atan2(Math.sqrt(x), Math.sqrt(1 - x));
 }
 
+function locationBox(lat, lng, radiusKm = 30) {
+  const latDelta = radiusKm / 111;
+  const cos = Math.max(0.2, Math.cos(lat * Math.PI / 180));
+  const lngDelta = radiusKm / (111 * cos);
+  return {
+    minLat: lat - latDelta,
+    maxLat: lat + latDelta,
+    minLng: lng - lngDelta,
+    maxLng: lng + lngDelta
+  };
+}
+
+function ftsQuery(value) {
+  const tokens = String(value || '')
+    .normalize('NFKC')
+    .replace(/["'(){}[\]:*^~\\/]+/g, ' ')
+    .split(/\s+/)
+    .map(v => v.trim())
+    .filter(Boolean)
+    .slice(0, 8);
+  return tokens.map(token => `"${token.replace(/"/g, '')}"*`).join(' OR ');
+}
+
 async function serveHtmlWithSeo(request, env) {
   const url = new URL(request.url);
   const assetResponse = await env.ASSETS.fetch(request);
@@ -214,12 +237,13 @@ const PRODUCT_SELECT = `
   FROM affiliate_products
 `;
 
-const DISCOVERY_SELECT = `
-  SELECT id, slug, entity_type, category, name, description, image_url, source_name, source_url, outbound_url,
-         phone, line_url, price_text, price_value, latitude, longitude, district, province,
-         verified, featured, sort_order, updated_at
-  FROM discovery_entities
+const DISCOVERY_FIELDS = `
+  id, slug, entity_type, category, name, description, image_url, source_name, source_url, outbound_url,
+  phone, line_url, price_text, price_value, latitude, longitude, district, province,
+  verified, featured, sort_order, updated_at
 `;
+
+const DISCOVERY_SELECT = `SELECT ${DISCOVERY_FIELDS} FROM discovery_entities`;
 
 async function discover(request, env, url) {
   const q = (url.searchParams.get('q') || '').trim().slice(0, 120);
@@ -245,25 +269,89 @@ async function discover(request, env, url) {
   }
 
   if (type !== 'product') {
+    const box = hasLocation ? locationBox(lat, lng, 30) : null;
     try {
-      let sql = `${DISCOVERY_SELECT} WHERE active = 1`;
+      let sql;
       const binds = [];
       let p = 1;
+
+      if (q) {
+        sql = `
+          SELECT ${DISCOVERY_FIELDS.replace(/\bid\b/g, 'd.id')
+            .replace(/\bslug\b/g, 'd.slug')
+            .replace(/\bentity_type\b/g, 'd.entity_type')
+            .replace(/\bcategory\b/g, 'd.category')
+            .replace(/\bname\b/g, 'd.name')
+            .replace(/\bdescription\b/g, 'd.description')
+            .replace(/\bimage_url\b/g, 'd.image_url')
+            .replace(/\bsource_name\b/g, 'd.source_name')
+            .replace(/\bsource_url\b/g, 'd.source_url')
+            .replace(/\boutbound_url\b/g, 'd.outbound_url')
+            .replace(/\bphone\b/g, 'd.phone')
+            .replace(/\bline_url\b/g, 'd.line_url')
+            .replace(/\bprice_text\b/g, 'd.price_text')
+            .replace(/\bprice_value\b/g, 'd.price_value')
+            .replace(/\blatitude\b/g, 'd.latitude')
+            .replace(/\blongitude\b/g, 'd.longitude')
+            .replace(/\bdistrict\b/g, 'd.district')
+            .replace(/\bprovince\b/g, 'd.province')
+            .replace(/\bverified\b/g, 'd.verified')
+            .replace(/\bfeatured\b/g, 'd.featured')
+            .replace(/\bsort_order\b/g, 'd.sort_order')
+            .replace(/\bupdated_at\b/g, 'd.updated_at')}
+          FROM discovery_entities d
+          JOIN discovery_entities_fts f ON f.rowid = d.id
+          WHERE d.active = 1 AND discovery_entities_fts MATCH ?${p}
+        `;
+        binds.push(ftsQuery(q));
+        p += 1;
+      } else {
+        sql = `${DISCOVERY_SELECT} WHERE active = 1`;
+      }
+
+      const prefix = q ? 'd.' : '';
       if (type !== 'all') {
-        sql += ` AND entity_type = ?${p}`;
+        sql += ` AND ${prefix}entity_type = ?${p}`;
         binds.push(type);
         p += 1;
       }
-      if (q) {
-        const like = `%${q}%`;
-        sql += ` AND (name LIKE ?${p} OR description LIKE ?${p} OR category LIKE ?${p} OR district LIKE ?${p} OR province LIKE ?${p})`;
-        binds.push(like);
+      if (box) {
+        sql += ` AND ${prefix}latitude BETWEEN ?${p} AND ?${p + 1} AND ${prefix}longitude BETWEEN ?${p + 2} AND ?${p + 3}`;
+        binds.push(box.minLat, box.maxLat, box.minLng, box.maxLng);
+        p += 4;
       }
-      sql += ` ORDER BY featured DESC, verified DESC, sort_order ASC, id DESC LIMIT 30`;
+
+      sql += ` ORDER BY ${prefix}featured DESC, ${prefix}verified DESC, ${prefix}sort_order ASC, ${prefix}id DESC LIMIT ${hasLocation ? 80 : 30}`;
       const stmt = env.DB.prepare(sql);
       const rows = binds.length ? await stmt.bind(...binds).all() : await stmt.all();
       (rows.results || []).forEach(row => items.push(discoveryEntityDto(row)));
-    } catch {}
+    } catch {
+      // Safe fallback while a new D1 migration is propagating or if FTS is unavailable.
+      try {
+        let sql = `${DISCOVERY_SELECT} WHERE active = 1`;
+        const binds = [];
+        let p = 1;
+        if (type !== 'all') {
+          sql += ` AND entity_type = ?${p}`;
+          binds.push(type);
+          p += 1;
+        }
+        if (q) {
+          const like = `%${q}%`;
+          sql += ` AND (name LIKE ?${p} OR description LIKE ?${p} OR category LIKE ?${p} OR district LIKE ?${p} OR province LIKE ?${p})`;
+          binds.push(like);
+          p += 1;
+        }
+        if (box) {
+          sql += ` AND latitude BETWEEN ?${p} AND ?${p + 1} AND longitude BETWEEN ?${p + 2} AND ?${p + 3}`;
+          binds.push(box.minLat, box.maxLat, box.minLng, box.maxLng);
+        }
+        sql += ` ORDER BY featured DESC, verified DESC, sort_order ASC, id DESC LIMIT ${hasLocation ? 80 : 30}`;
+        const stmt = env.DB.prepare(sql);
+        const rows = binds.length ? await stmt.bind(...binds).all() : await stmt.all();
+        (rows.results || []).forEach(row => items.push(discoveryEntityDto(row)));
+      } catch {}
+    }
   }
 
   if (hasLocation) {
