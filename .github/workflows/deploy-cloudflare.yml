@@ -52,24 +52,64 @@ jobs:
       - name: Deploy Worker and custom domains
         run: npx wrangler deploy
 
+      - name: Wait for custom domains
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          wait_for_dns() {
+            host="$1"
+            echo "Waiting for DNS: $host"
+            for attempt in $(seq 1 60); do
+              if getent ahosts "$host" >/dev/null 2>&1; then
+                echo "$host resolves."
+                return 0
+              fi
+              echo "DNS not ready for $host (attempt $attempt/60); retrying in 5s..."
+              sleep 5
+            done
+            echo "::error::DNS for $host did not resolve within 5 minutes after deployment."
+            return 1
+          }
+
+          wait_for_https() {
+            url="$1"
+            echo "Waiting for HTTPS: $url"
+            for attempt in $(seq 1 30); do
+              if curl --fail --silent --show-error --location --max-time 20 --output /dev/null "$url"; then
+                echo "$url is reachable over HTTPS."
+                return 0
+              fi
+              echo "HTTPS not ready for $url (attempt $attempt/30); retrying in 5s..."
+              sleep 5
+            done
+            echo "::error::$url did not become reachable over HTTPS within the readiness window."
+            return 1
+          }
+
+          wait_for_dns meepiap.com
+          wait_for_dns www.meepiap.com
+          wait_for_https https://meepiap.com/
+          wait_for_https https://www.meepiap.com/
+
       - name: Verify production
         shell: bash
         run: |
           set -euo pipefail
 
           echo '=== Homepage ==='
-          curl --fail-with-body --silent --show-error --location --retry 3 --retry-delay 2 --max-time 30 \
+          curl --fail-with-body --silent --show-error --location --retry 3 --retry-all-errors --retry-delay 2 --max-time 30 \
             --output /tmp/home.html https://meepiap.com/
           grep -q 'MEEPIAP' /tmp/home.html
           grep -q 'มีเพียบ' /tmp/home.html
 
           echo '=== www redirect/domain ==='
-          curl --fail-with-body --silent --show-error --location --retry 3 --retry-delay 2 --max-time 30 \
+          curl --fail-with-body --silent --show-error --location --retry 3 --retry-all-errors --retry-delay 2 --max-time 30 \
             --output /tmp/www-home.html https://www.meepiap.com/
           grep -q 'MEEPIAP' /tmp/www-home.html
 
           echo '=== Health ==='
-          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 2 --max-time 30 \
+          curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors --retry-delay 2 --max-time 30 \
             https://meepiap.com/api/health > /tmp/health.json
           cat /tmp/health.json
           python3 - <<'PY'
@@ -84,7 +124,7 @@ jobs:
           PY
 
           echo '=== Discovery API ==='
-          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 2 --max-time 30 \
+          curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors --retry-delay 2 --max-time 30 \
             'https://meepiap.com/api/discover?q=มือถือ&type=all' > /tmp/discover.json
           python3 - <<'PY'
           import json
@@ -95,10 +135,10 @@ jobs:
           PY
 
           echo '=== robots + sitemap ==='
-          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 2 --max-time 30 \
+          curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors --retry-delay 2 --max-time 30 \
             https://meepiap.com/robots.txt > /tmp/robots.txt
           grep -q 'https://meepiap.com/sitemap.xml' /tmp/robots.txt
-          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 2 --max-time 30 \
+          curl --fail-with-body --silent --show-error --retry 3 --retry-all-errors --retry-delay 2 --max-time 30 \
             https://meepiap.com/sitemap.xml > /tmp/sitemap.xml
           grep -q '<urlset' /tmp/sitemap.xml
 
