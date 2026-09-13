@@ -1,0 +1,32 @@
+name: Apply MEEPIAP production hardening
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Patch Worker
+        run: python3 scripts/harden_discovery_runtime.py
+      - name: Validate Worker
+        run: |
+          node --check worker/index.js
+          grep -q "ensureDiscoveryCore" worker/index.js
+          grep -q "like-fallback" worker/index.js
+          grep -q "discoveryCoreReady" worker/index.js
+      - name: Commit and clean up
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add worker/index.js
+          git rm scripts/harden_discovery_runtime.py .github/workflows/apply-production-hardening.yml
+          git commit -m "Harden MEEPIAP Discovery runtime for staged D1 rollout"
+          git push origin HEAD:main
