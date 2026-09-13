@@ -1,0 +1,46 @@
+name: Deploy MEEPIAP to Cloudflare once
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  deploy:
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+    steps:
+      - uses: actions/checkout@v5
+      - name: Check Cloudflare credential availability
+        run: |
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "CLOUDFLARE_API_TOKEN is not configured in GitHub Actions secrets."
+            exit 1
+          fi
+      - name: Install Wrangler
+        run: npm install
+      - name: Apply D1 migrations
+        run: npx wrangler d1 migrations apply koommai-db --remote
+      - name: Deploy Worker and custom domains
+        run: npx wrangler deploy
+      - name: Verify public endpoints
+        run: |
+          set +e
+          echo '=== meepiap.com ==='
+          curl -sSIL --retry 2 --retry-delay 1 --max-time 20 https://meepiap.com/ || true
+          echo '=== health ==='
+          curl -sS --retry 2 --retry-delay 1 --max-time 20 -D - https://meepiap.com/api/health || true
+      - name: Remove one-time deploy workflow
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git rm .github/workflows/deploy-meepiap-once.yml
+          git commit -m "Remove one-time Cloudflare deploy workflow"
+          git push origin HEAD:main
