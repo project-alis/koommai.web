@@ -22,35 +22,84 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
-      - name: Check deployment credentials
-        id: credentials
+      - name: Require Cloudflare deployment credentials
         shell: bash
         run: |
-          if [ -n "$CLOUDFLARE_API_TOKEN" ] && [ -n "$CLOUDFLARE_ACCOUNT_ID" ]; then
-            echo "ready=true" >> "$GITHUB_OUTPUT"
-            echo "Cloudflare deployment credentials are configured."
-          else
-            echo "ready=false" >> "$GITHUB_OUTPUT"
-            echo "Cloudflare deploy skipped: add CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID repository secrets."
+          missing=0
+          if [ -z "$CLOUDFLARE_API_TOKEN" ]; then
+            echo "::error::Missing repository secret CLOUDFLARE_API_TOKEN"
+            missing=1
           fi
+          if [ -z "$CLOUDFLARE_ACCOUNT_ID" ]; then
+            echo "::error::Missing repository secret CLOUDFLARE_ACCOUNT_ID"
+            missing=1
+          fi
+          if [ "$missing" -ne 0 ]; then
+            echo "Deployment cannot continue until both Cloudflare repository secrets are configured."
+            exit 1
+          fi
+          echo "Cloudflare deployment credentials are configured."
 
       - name: Install dependencies
-        if: steps.credentials.outputs.ready == 'true'
         run: npm install
 
       - name: Apply D1 migrations
-        if: steps.credentials.outputs.ready == 'true'
         run: npx wrangler d1 migrations apply koommai-db --remote
 
-      - name: Deploy Worker and Custom Domains
-        if: steps.credentials.outputs.ready == 'true'
+      - name: Verify D1 migration state
+        run: npx wrangler d1 migrations list koommai-db --remote
+
+      - name: Deploy Worker and custom domains
         run: npx wrangler deploy
 
       - name: Verify production
-        if: steps.credentials.outputs.ready == 'true'
+        shell: bash
         run: |
-          echo '=== https://meepiap.com ==='
-          curl --fail-with-body -sSIL --retry 3 --retry-delay 2 --max-time 30 https://meepiap.com/
-          echo '=== /api/health ==='
-          curl --fail-with-body -sS --retry 3 --retry-delay 2 --max-time 30 https://meepiap.com/api/health
-          echo
+          set -euo pipefail
+
+          echo '=== Homepage ==='
+          curl --fail-with-body --silent --show-error --location --retry 3 --retry-delay 2 --max-time 30 \
+            --output /tmp/home.html https://meepiap.com/
+          grep -q 'MEEPIAP' /tmp/home.html
+          grep -q 'มีเพียบ' /tmp/home.html
+
+          echo '=== www redirect/domain ==='
+          curl --fail-with-body --silent --show-error --location --retry 3 --retry-delay 2 --max-time 30 \
+            --output /tmp/www-home.html https://www.meepiap.com/
+          grep -q 'MEEPIAP' /tmp/www-home.html
+
+          echo '=== Health ==='
+          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 2 --max-time 30 \
+            https://meepiap.com/api/health > /tmp/health.json
+          cat /tmp/health.json
+          python3 - <<'PY'
+          import json
+          data = json.load(open('/tmp/health.json', encoding='utf-8'))
+          assert data.get('ok') is True, data
+          assert data.get('db') is True, data
+          discovery = data.get('discovery') or {}
+          assert discovery.get('core') is True, data
+          assert discovery.get('search_index') is True, data
+          assert discovery.get('search_mode') == 'fts5', data
+          PY
+
+          echo '=== Discovery API ==='
+          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 2 --max-time 30 \
+            'https://meepiap.com/api/discover?q=มือถือ&type=all' > /tmp/discover.json
+          python3 - <<'PY'
+          import json
+          data = json.load(open('/tmp/discover.json', encoding='utf-8'))
+          assert isinstance(data.get('items'), list), data
+          assert isinstance(data.get('count'), int), data
+          assert data.get('type') == 'all', data
+          PY
+
+          echo '=== robots + sitemap ==='
+          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 2 --max-time 30 \
+            https://meepiap.com/robots.txt > /tmp/robots.txt
+          grep -q 'https://meepiap.com/sitemap.xml' /tmp/robots.txt
+          curl --fail-with-body --silent --show-error --retry 3 --retry-delay 2 --max-time 30 \
+            https://meepiap.com/sitemap.xml > /tmp/sitemap.xml
+          grep -q '<urlset' /tmp/sitemap.xml
+
+          echo 'MEEPIAP production verification passed.'
