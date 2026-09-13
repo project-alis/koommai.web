@@ -12,19 +12,17 @@ jobs:
   probe:
     runs-on: ubuntu-latest
     steps:
-      - name: DNS and HTTP probe
+      - name: Probe current and legacy Worker endpoints
         run: |
           set +e
-          echo '=== DNS meepiap.com ==='
-          getent ahosts meepiap.com || true
-          echo '=== HTTPS apex ==='
-          curl -sSIL --max-time 15 https://meepiap.com/ || true
-          echo '=== HTTPS www ==='
-          curl -sSIL --max-time 15 https://www.meepiap.com/ || true
-          echo '=== workers.dev ==='
-          curl -sSIL --max-time 15 https://meepiap.javis-github.workers.dev/ || true
-          echo '=== health apex ==='
-          curl -sS --max-time 15 -D - https://meepiap.com/api/health || true
-          echo
-          echo '=== health workers.dev ==='
-          curl -sS --max-time 15 -D - https://meepiap.javis-github.workers.dev/api/health || true
+          for url in \
+            https://meepiap.com/ \
+            https://www.meepiap.com/ \
+            https://meepiap.javis-github.workers.dev/ \
+            https://ohopiap.javis-github.workers.dev/ \
+            https://ohopiap-web.javis-github.workers.dev/; do
+            echo "=== $url ==="
+            curl -sSIL --max-time 15 "$url" || true
+          done
+          echo '=== old worker health ==='
+          curl -sS --max-time 15 -D - https://ohopiap.javis-github.workers.dev/api/health || true
