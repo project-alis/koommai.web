@@ -1,84 +1,104 @@
-# MEEPIAP (มีเพียบ) — V1.7.2
+# MEEPIAP (มีเพียบ) — Discovery V1
 
-MEEPIAP คือเว็บไซต์ช่วยตัดสินใจก่อนซื้อ ก่อนขาย และก่อนจ่าย โดยรีแบรนด์จากชื่อเดิม Koommai ใน V1.7 และปรับ Brand/UI เป็นภาษาไทยชัดเจนใน V1.7.1
+**MEEPIAP — ค้นทีเดียว เจอเพียบ**
 
-## ฟังก์ชันหลัก
-1. โปรนี้คุ้มจริงไหม?
-2. ขายราคานี้เหลือกำไรไหม?
-3. อันไหนถูกกว่าจริง?
-4. Auto Product Cards จาก D1
-5. Affiliate redirect ผ่าน `/go/:slug`
-6. SEO pages, sitemap, robots.txt และ structured data
-7. Affiliate readiness health check ผ่าน `/api/health`
+MEEPIAP คือ Universal Discovery สำหรับค้นของ ร้าน บริการซ่อม ของมือสอง ของฟรี ของกิน และดีลออนไลน์จากจุดเดียว โดยต่อยอดระบบ Affiliate/SEO เดิมและคง D1 เดิมไว้เพื่อไม่เพิ่มความเสี่ยงจากการย้ายฐานข้อมูล
 
 ## Brand
 - Public brand: `มีเพียบ`
 - International / domain identity: `MEEPIAP`
+- Main domain: `https://meepiap.com`
 - Package: `meepiap-web`
-- คำว่า “คุ้มไหม?” ยังคงใช้ในบริบทของคำถาม/ฟีเจอร์ เช่น “โปรนี้คุ้มจริงไหม?” ไม่ใช่ชื่อแบรนด์
+- Positioning: `ค้นทีเดียว เจอเพียบ`
 
-## V1.7.2 Affiliate Readiness
+## Discovery worlds
+1. ของเพียบ
+2. ซ่อมเพียบ
+3. มือสองเพียบ
+4. ฟรีเพียบ
+5. ร้านเพียบ
+6. กินเพียบ
+
+หน้า Home เป็น mobile-first Discovery UI: Search ใหญ่, หมวดกดง่าย, Quick Search, Near Me, responsive cards และ reduced-motion support
+
+## Core APIs
+- `/api/discover` — ค้นสินค้า + Discovery entities จากจุดเดียว
+- `/api/home-feed` — สินค้า Affiliate ที่พร้อมแสดง
+- `/api/product-search` — ค้นสินค้า Affiliate
+- `/api/recommendations` — คำแนะนำตาม tool
+- `/api/health` — ตรวจ Affiliate DB + Discovery core + Search index
+- `/go/:slug` — track click แล้ว redirect Affiliate
+- `/out/:slug` — track click แล้ว redirect ร้าน/บริการ/ประกาศต้นทาง
+
+## Search architecture
+- Discovery core อยู่ใน `discovery_entities`
+- Click tracking อยู่ใน `discovery_click_events`
+- Migration `0005` เพิ่ม `search_terms` + SQLite FTS5
+- Near Me ใช้ bounding box ก่อนคำนวณระยะจริงเพื่อลด D1 row reads
+- ถ้า FTS5 ยังไม่ถูก apply ระบบจะ fallback เป็น LIKE search โดยไม่ทำให้หน้า Discovery ล่ม
+- ถ้า migration `0004` ยังไม่ทัน Worker สามารถ bootstrap เฉพาะ Discovery core แบบ idempotent ได้เอง จากนั้น migration ปกติยังสามารถ apply ต่อภายหลังได้
+
+## Affiliate safety
 - แสดงสินค้า active เฉพาะรายการที่มี `affiliate_url` แบบ HTTPS จริง
-- ค่า placeholder เช่น `PENDING_SHOPEE_AFFILIATE` จะไม่หลุดขึ้นหน้า Home/Search/Recommendations
+- Placeholder Affiliate URL จะไม่ขึ้น Home/Search/Recommendations
 - `/go/:slug` ตรวจสอบปลายทางก่อนบันทึก click และ redirect
-- `/api/health` ใช้ตรวจว่า D1 schema พร้อมสำหรับ Affiliate fields และดูจำนวนสินค้ารวม/สินค้าที่พร้อมแสดง
-- ไม่มี D1 migration ใหม่ใน V1.7.2
+- Affiliate safety flow เดิมยังคงอยู่ครบ
 
 ## Infrastructure
 - Cloudflare Worker name: `meepiap`
-- Current workers.dev URL: `https://meepiap.javis-github.workers.dev/`
+- Custom domains: `meepiap.com`, `www.meepiap.com`
+- `www` และ workers.dev redirect ไป `https://meepiap.com`
 - D1 binding: `DB`
 - D1 database: `koommai-db`
 - D1 database ID: `e629bb4c-0c0b-4e94-bba3-5032b3046114`
-- API / Affiliate logic ใช้ Worker และ D1 database เดิม
+- **ไม่ rename D1 เพียงเพื่อ rebrand**
 
-Worker migration เป็น `meepiap` สำเร็จแล้ว และ `/api/health` ยืนยันสถานะ `ok: true`, `db: true`, schema `affiliate-ready-v3` โดยมี pending products 18 รายการและ active 0 รายการ ณ วันที่ 12 กันยายน 2026
+`wrangler.jsonc` เป็น source of truth สำหรับ Worker, custom domain routes, assets และ D1 binding
 
-Canonical, og:url, sitemap และ robots.txt สร้างจาก request origin ใน `worker/index.js` จึงใช้ hostname `meepiap.javis-github.workers.dev` โดยอัตโนมัติ
+## D1 migrations
+```text
+0001_init.sql
+0002_auto_product_cards.sql
+0003_home_feed.sql
+0004_discovery_core.sql
+0005_discovery_search_scale.sql
+```
 
-> ยังไม่ rename `koommai-db` หรือเปลี่ยน database ID เพียงเพื่อรีแบรนด์
-
-## Development
+สำหรับ manual deploy:
 ```bash
 npm install
-npm run dev
+npm run deploy
 ```
 
-## Production deploy
-Cloudflare Workers Builds ที่เชื่อม GitHub ใช้:
-```bash
-npx wrangler deploy
-```
+`npm run deploy` จะ apply D1 migrations ไปที่ `koommai-db` ก่อน `wrangler deploy`
 
-คำสั่งนี้ **ไม่ได้ apply D1 migrations อัตโนมัติ** ดังนั้นถ้ามี migration ใหม่ ต้อง apply แยกก่อน deploy หรือใช้ workflow ที่กำหนดไว้โดยตั้งใจ
+Cloudflare Workers Builds ที่เชื่อม GitHub อาจใช้ `npx wrangler deploy` โดยตรงและไม่ apply D1 migrations อัตโนมัติ จึงมี runtime fallback สำหรับ Discovery core แต่ควร apply migrations `0004–0005` ให้ครบเมื่อมี D1 Edit permission เพื่อเปิด FTS5 เต็มรูปแบบ
 
-สำหรับ local/manual deployment เดิม `npm run deploy` ยังมีคำสั่ง apply migrations ตาม `package.json` แต่ไม่ใช่คำสั่งที่ Cloudflare Builds ใช้อยู่ใน production ตอนนี้
+## Data policy
+- ไม่ scrape/เก็บรูปหรือข้อมูลภายนอกแบบไม่มีสิทธิ์
+- ใช้ข้อมูลจากเจ้าของร้าน, ผู้ใช้ส่งข้อมูล, Affiliate feed/API ที่อนุญาต, Open Data หรือแหล่งที่มีสิทธิ์ชัดเจน
+- รูปจำนวนมากควรเก็บใน R2 ไม่ใช่ D1
+- ไม่มีข้อมูลจริงเพียงพอ = ไม่สร้างหน้า SEO จำนวนมากแบบ thin/doorway pages
 
-## Affiliate product data
-Schema รองรับข้อมูลสินค้าจริงแล้ว เช่น:
-- `affiliate_url`
-- `source_url`
-- `image_url`
-- `merchant`
-- `current_price`
-- `previous_price`
-- `discount_percent`
-- `popularity_score`
-- `last_checked_at`
-
-ตัวอย่างสำหรับนำเข้าสินค้าอยู่ใน `examples/` โดยเฉพาะ `shopee-product-upsert-template.sql` และรายการ pending 18 กลุ่มสินค้าใน `affiliate-products-pending.sql`
+## Production quality
+Permanent CI อยู่ที่ `.github/workflows/ci.yml` และตรวจ:
+- JavaScript syntax
+- JSON syntax
+- D1 migrations + FTS5 smoke test
+- MEEPIAP brand audit
+- UI asset wiring
 
 ## โครงสร้างหลัก
 ```text
 public/
   index.html
+  assets/
   tools/
   guides/
   about/
   privacy/
   affiliate-disclosure/
   contact/
-  assets/
 worker/
   index.js
 migrations/
@@ -87,9 +107,9 @@ package.json
 wrangler.jsonc
 ```
 
-## ขั้นถัดไป
-1. นำสินค้าจริงที่ได้รับสิทธิ์ใช้งาน + Affiliate URL เข้า D1 โดยเริ่ม `active=0`
-2. ตรวจชื่อ รูป ราคา ร้าน และ redirect
-3. ตั้ง `active=1` เฉพาะรายการที่ตรวจแล้ว
-4. ตรวจ click tracking และหน้า Home/Search/Recommendations
-5. เริ่มติดตาม Search Console และ click data เพื่อเลือกหมวดสินค้าที่ควรขยาย
+## Next product priorities
+1. ใส่ข้อมูลจริงชุดแรก: ซ่อมเพียบ + ของเพียบ + ฟรี/มือสองเพียบ
+2. Apply D1 migrations `0004–0005` ใน production เพื่อเปิด FTS5 เต็มรูปแบบ
+3. เพิ่ม R2 สำหรับรูปที่เราได้รับสิทธิ์ให้เก็บเอง
+4. เปิด Claim ร้าน / เพิ่มข้อมูล / Save / Alert
+5. ต่อ Google Search Console และเริ่มวัด query/click จริง
