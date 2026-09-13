@@ -11,6 +11,8 @@ MEEPIAP คือ Universal Discovery สำหรับค้นของ ร�
 - Package: `meepiap-web`
 - Positioning: `ค้นทีเดียว เจอเพียบ`
 
+`MEEPIAP / มีเพียบ` คือชื่อปัจจุบันและเป็น source of truth สำหรับงานใหม่ทั้งหมด ชื่อเก่าที่อาจยังคงอยู่ในชื่อ repository หรือ D1 เป็น technical legacy เท่านั้นและไม่ใช่ public brand
+
 ## Discovery worlds
 1. ของเพียบ
 2. ซ่อมเพียบ
@@ -72,7 +74,26 @@ npm run deploy
 
 `npm run deploy` จะ apply D1 migrations ไปที่ `koommai-db` ก่อน `wrangler deploy`
 
-Cloudflare Workers Builds ที่เชื่อม GitHub อาจใช้ `npx wrangler deploy` โดยตรงและไม่ apply D1 migrations อัตโนมัติ จึงมี runtime fallback สำหรับ Discovery core แต่ควร apply migrations `0004–0005` ให้ครบเมื่อมี D1 Edit permission เพื่อเปิด FTS5 เต็มรูปแบบ
+## Production deployment
+Production pipeline อยู่ที่ `.github/workflows/deploy-cloudflare.yml` และ deploy จาก `main` ไป Cloudflare โดยต้องมี GitHub repository secrets ครบ 2 ค่า:
+
+- `CLOUDFLARE_API_TOKEN` — token ที่มีสิทธิ์ deploy Workers, จัดการ custom domain route ที่เกี่ยวข้อง และแก้ไข D1
+- `CLOUDFLARE_ACCOUNT_ID` — Cloudflare Account ID ของ account ที่ใช้ Worker/D1 นี้
+
+Pipeline ถูกออกแบบแบบ fail-closed: ถ้า secret ขาด จะ **fail** และไม่รายงานผลสำเร็จปลอม หลัง credentials พร้อม pipeline จะทำตามลำดับนี้:
+
+1. ติดตั้ง dependencies
+2. apply D1 migrations ทั้งหมดไปที่ `koommai-db`
+3. ตรวจ migration state
+4. deploy Worker `meepiap` และ custom domains
+5. smoke test `meepiap.com` และ `www.meepiap.com`
+6. ตรวจ `/api/health` ว่า DB + Discovery core + FTS5 พร้อม
+7. ตรวจ `/api/discover`
+8. ตรวจ `robots.txt` และ `sitemap.xml`
+
+ดังนั้น GitHub Action `Deploy MEEPIAP to Cloudflare` ที่เป็นสีเขียวหมายถึง migration, deploy และ production verification ผ่านจริงครบชุด
+
+Cloudflare Workers Builds ที่เชื่อม GitHub แยกต่างหากอาจใช้ `npx wrangler deploy` โดยตรงและไม่ apply D1 migrations อัตโนมัติ จึงไม่ควรใช้สถานะของ Workers Builds แทน production pipeline ข้างต้น
 
 ## Data policy
 - ไม่ scrape/เก็บรูปหรือข้อมูลภายนอกแบบไม่มีสิทธิ์
@@ -87,6 +108,8 @@ Permanent CI อยู่ที่ `.github/workflows/ci.yml` และตรว
 - D1 migrations + FTS5 smoke test
 - MEEPIAP brand audit
 - UI asset wiring
+
+Production deploy แยกจาก CI เพื่อให้แยกได้ชัดว่า “code ผ่าน” กับ “ขึ้น production สำเร็จ” เป็นคนละสถานะ
 
 ## โครงสร้างหลัก
 ```text
@@ -108,8 +131,8 @@ wrangler.jsonc
 ```
 
 ## Next product priorities
-1. ใส่ข้อมูลจริงชุดแรก: ซ่อมเพียบ + ของเพียบ + ฟรี/มือสองเพียบ
-2. Apply D1 migrations `0004–0005` ใน production เพื่อเปิด FTS5 เต็มรูปแบบ
+1. ให้ production pipeline ผ่านจริงครบชุด และยืนยัน D1 migrations `0004–0005` + FTS5
+2. ใส่ข้อมูลจริงชุดแรก: ซ่อมเพียบ + ของเพียบ + ฟรี/มือสองเพียบ
 3. เพิ่ม R2 สำหรับรูปที่เราได้รับสิทธิ์ให้เก็บเอง
 4. เปิด Claim ร้าน / เพิ่มข้อมูล / Save / Alert
 5. ต่อ Google Search Console และเริ่มวัด query/click จริง
