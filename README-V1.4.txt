@@ -1,4 +1,4 @@
-Koommai V1.4 Affiliate-ready patch
+MEEPIAP / มีเพียบ — V1.4 Affiliate-ready patch (historical notes)
 
 ไฟล์นี้ทำ 4 เรื่อง:
 1) ปรับ About / Privacy / Affiliate Disclosure / Contact ให้เป็น Production-ready
