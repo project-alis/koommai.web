@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - main
+      - feature/meepiap-affiliate-publisher-v2
 
 permissions:
   contents: read
@@ -14,41 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
-
-      - name: JavaScript syntax
-        run: |
-          node --check worker/index.js
-          node --check public/assets/app.js
-          node --check public/assets/discovery.js
-          node --check public/assets/meepiap-wow.js
-
-      - name: JSON syntax
-        run: |
-          python3 -m json.tool package.json >/dev/null
-          python3 -m json.tool public/site.webmanifest >/dev/null
-
-      - name: D1 migration smoke test
-        run: |
-          python3 - <<'PY'
-          import sqlite3
-          from pathlib import Path
-          con = sqlite3.connect(':memory:')
-          for path in sorted(Path('migrations').glob('*.sql')):
-              print('apply', path)
-              con.executescript(path.read_text(encoding='utf-8'))
-          con.execute("INSERT INTO discovery_entities(slug,entity_type,category,name,description,search_terms,latitude,longitude,district,province) VALUES(?,?,?,?,?,?,?,?,?,?)",
-                      ('ci-phone-repair','service','phone-repair','ร้านซ่อมมือถือ CI','ทดสอบค้นหา','ร้านซ่อมมือถือ ซ่อมมือถือ มือถือ',13.67,100.63,'บางนา','กรุงเทพมหานคร'))
-          result = con.execute("SELECT d.name FROM discovery_entities d JOIN discovery_entities_fts f ON f.rowid=d.id WHERE discovery_entities_fts MATCH ?", ('\"ร้านซ่อมมือถือ\"*',)).fetchone()
-          assert result and result[0] == 'ร้านซ่อมมือถือ CI'
-          PY
-
-      - name: Brand audit
-        run: |
-          if grep -RIn --exclude-dir=.git -E 'OHOPIAP|Ohopiap|ohopiap|โอ้โหเพียบ|<span>OHO</span>PIAP' public README*.md README*.txt package.json wrangler.jsonc worker; then
-            echo 'Legacy brand reference found.'
-            exit 1
-          fi
-          grep -q 'MEEPIAP' public/index.html
-          grep -q 'มีเพียบ' public/index.html
-          grep -q '/assets/meepiap-wow.css' public/index.html
-          grep -q '/assets/meepiap-wow.js' public/index.html
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Syntax, branding and configuration
+        run: npm run check
+      - name: Admin, product CRUD and legacy migration regression tests
+        run: npm test

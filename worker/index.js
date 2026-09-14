@@ -1,3 +1,5 @@
+import { handleAdmin } from './admin.js';
+
 const INDEXABLE_PATHS = [
   '/',
   '/tools/',
@@ -470,8 +472,10 @@ export default {
       return Response.redirect(`https://meepiap.com${url.pathname}${url.search}`, 301);
     }
 
+    if (url.pathname === '/admin' || url.pathname.startsWith('/admin/')) return handleAdmin(request, env);
+
     if (url.pathname === '/robots.txt') {
-      return new Response(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /go/\nDisallow: /out/\nSitemap: ${url.origin}/sitemap.xml\n`, {
+      return new Response(`User-agent: *\nAllow: /\nDisallow: /api/\nDisallow: /go/\nDisallow: /out/\nDisallow: /admin/\nSitemap: ${url.origin}/sitemap.xml\n`, {
         headers: { 'content-type': 'text/plain; charset=utf-8' }
       });
     }

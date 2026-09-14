@@ -4,8 +4,14 @@
   "main": "worker/index.js",
   "compatibility_date": "2026-09-12",
   "routes": [
-    { "pattern": "meepiap.com", "custom_domain": true },
-    { "pattern": "www.meepiap.com", "custom_domain": true }
+    {
+      "pattern": "meepiap.com",
+      "custom_domain": true
+    },
+    {
+      "pattern": "www.meepiap.com",
+      "custom_domain": true
+    }
   ],
   "assets": {
     "directory": "./public",
@@ -24,7 +30,9 @@
       "/robots.txt",
       "/api/*",
       "/go/*",
-      "/out/*"
+      "/out/*",
+      "/admin",
+      "/admin/*"
     ]
   },
   "d1_databases": [
@@ -33,6 +41,16 @@
       "database_name": "koommai-db",
       "database_id": "e629bb4c-0c0b-4e94-bba3-5032b3046114",
       "migrations_dir": "migrations"
+    }
+  ],
+  "ratelimits": [
+    {
+      "name": "ADMIN_LOGIN_LIMITER",
+      "namespace_id": "62001",
+      "simple": {
+        "limit": 5,
+        "period": 60
+      }
     }
   ]
 }

@@ -1,0 +1,16 @@
+import { readFileSync,readdirSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
+import assert from 'node:assert/strict';
+const walk=p=>readdirSync(p,{withFileTypes:true}).flatMap(e=>e.isDirectory()?walk(p+'/'+e.name):[p+'/'+e.name]);
+for(const file of [...walk('worker'),...walk('public/assets'),...walk('tests'),...walk('scripts')].filter(p=>/\.(js|mjs)$/.test(p)))execFileSync(process.execPath,['--check',file]);
+for(const file of ['package.json','wrangler.jsonc','public/site.webmanifest'])JSON.parse(readFileSync(file,'utf8'));
+for(const file of [...walk('public'),...walk('worker')])assert.doesNotMatch(readFileSync(file,'utf8'),/ohopiap|โอ้โหเพียบ|<span>OHO<\/span>PIAP/i);
+assert.doesNotMatch(readFileSync('public/assets/product-placeholder.svg','utf8'),/>คุ้มไหม\?</);
+assert.doesNotMatch(readFileSync('public/assets/app.js','utf8'),/ในฐานคุ้มไหม/);
+const home=readFileSync('public/index.html','utf8');
+for(const value of ['MEEPIAP','มีเพียบ','/assets/meepiap-wow.css','/assets/meepiap-wow.js'])assert.ok(home.includes(value));
+const config=JSON.parse(readFileSync('wrangler.jsonc','utf8'));
+assert.equal(config.d1_databases[0].binding,'DB');assert.equal(config.d1_databases[0].database_name,'koommai-db');
+assert.ok(config.assets.run_worker_first.includes('/admin/*'));
+assert.ok(!JSON.stringify(config).includes('ADMIN_PASSWORD_HASH'));
+console.log('Syntax, JSON, branding and infrastructure checks passed.');
