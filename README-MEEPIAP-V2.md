@@ -37,7 +37,7 @@ New additive migration: `migrations/0006_affiliate_publisher_v2.sql`.
 
 | Table | Purpose |
 | --- | --- |
-| clips | Clip metadata and draft/published/archived status, reserved for later phases |
+| clips | Clip metadata and draft/planned/published/archived status, reserved for later phases |
 | clip_products | Ordered clip-to-product relationship |
 | collections | Collection metadata and status |
 | collection_items | Ordered collection-to-product relationship |
@@ -75,7 +75,7 @@ Slugs use lowercase ASCII letters/numbers separated by hyphens. URLs must be HTT
 Use Node.js 24 or later. Passwords and secrets are never stored in source/configuration.
 
 1. Run `npm install`.
-2. Run `npm run admin:password-hash` in an interactive terminal. The helper hides input, requires a password of 16–1024 characters and confirmation, and outputs only a salted hash.
+2. Run `npm run admin:password-hash` in an interactive terminal. The helper hides input, requires a password of 16–1024 characters and confirmation, reports the work factor and outputs a salted hash.
 3. Generate a separate cryptographically random SESSION_SECRET with a password manager (at least 32 random bytes). Do not reuse a password or hash as this secret.
 4. For local development only, put the hash and secret into the ignored `.dev.vars` file as quoted values named ADMIN_PASSWORD_HASH and SESSION_SECRET.
 5. After explicit deployment approval, set Cloudflare Secrets interactively:
@@ -85,7 +85,7 @@ Use Node.js 24 or later. Passwords and secrets are never stored in source/config
    ```
    These commands modify production configuration and are documentation only in this checkpoint.
 
-Password format is `pbkdf2-sha256$100000$<16-byte salt in hex>$<32-byte derived key in hex>`. Password verification uses Web Crypto PBKDF2/SHA-256 with 100,000 iterations and an equal-length constant-work comparison. Use a strong unique generated password; this single-admin design has no MFA.
+Password format is `pbkdf2-sha256$600000$<16-byte salt in hex>$<32-byte derived key in hex>`. Password verification uses Web Crypto PBKDF2/SHA-256 with a default of 600,000 iterations and an equal-length constant-work comparison. The encoded iteration count is parsed and used during verification. Configuration and generation accept only integer counts from 600,000 through 2,000,000; the upper bound prevents accidental excessive CPU work. Old 100,000-iteration hashes are rejected, so regenerate them with the helper before any approved setup. Use a strong unique generated password; this single-admin design has no MFA.
 
 Session cookies are HMAC-SHA-256 signed, host-only (__Host- prefix), HttpOnly, Secure and SameSite=Strict, with an eight-hour absolute expiry. D1 stores only a hash of the random session ID. Logout revokes the session server-side, so a captured old cookie cannot be replayed after logout. Rotating either secret invalidates existing sessions. Login challenges expire after ten minutes. Every write requires both a signed-session CSRF token and an exact same-origin Origin header.
 
@@ -132,9 +132,31 @@ The six V2 publishing tables are foundations only. No TikTok /t/:slug landing, c
 
 ## Checkpoint verification
 
-- npm test: 15 passed, 0 failed (including populated legacy migration upgrade).
+- npm test: 18 passed, 0 failed (including populated legacy migration upgrade).
 - npm run check: passed.
 - npm run db:local: migrations 0001–0006 applied successfully to local D1.
 - Wrangler deploy --dry-run: bundle/configuration passed, no deployment.
 - Additional direct Miniflare smoke attempt was inconclusive: the standalone harness did not complete runtime startup and was stopped. It is not counted as a passing runtime/browser test.
 - No production requests, remote migrations, deployment, production secret writes or merge were performed.
+
+## PR #14 review checkpoint: unshipped migration completion
+
+0006 has not been applied remotely; this review updates that same migration, with no 0007. Migrations 0001–0005 remain unchanged.
+
+- clips adds caption and cover_image_url; source_url remains the canonical external URL. Status supports draft, planned, published and archived.
+- clip_products and collection_items add optional note.
+- collections adds cover_image_url and sort_order (default 100); existing draft/published/archived status is retained.
+- content_ideas adds nullable collection_id, hook, script, visual_sequence, on_screen_text, caption, hashtags and content_angle. Status defaults to idea and accepts idea, selected, producing, published and archived. Existing optional notes is retained.
+- page_views adds referrer_path. Existing nullable relationships and click_events attribution columns remain.
+- This is schema preparation only; Phase 2 functionality is not implemented.
+
+If a local database already recorded the earlier 0006, Wrangler will not reapply the edited file. Preserve that local state and verify this unshipped version with a fresh local-only persistence directory:
+
+```sh
+npm run db:local -- --persist-to .wrangler/review-0006
+npx wrangler dev --local-protocol https --persist-to .wrangler/review-0006
+```
+
+Never remove migration history or rerun the edited file against a database that already applied the old version. Production must still be at 0005 before the first approved application of this completed 0006.
+
+Review validation: 18 Node tests pass, including independent PBKDF2 comparison, encoded 650,000-iteration verification, weak/malformed work-factor rejection, schema field persistence, allowed/rejected statuses, nullable foreign keys and populated legacy upgrade. A local isolated workerd probe also successfully derived PBKDF2-SHA256 at 600,000 iterations. This narrow crypto probe does not replace full browser/staging verification or production CPU-budget measurement. Runtime API reference: [Cloudflare Web Crypto](https://developers.cloudflare.com/workers/runtime-apis/web-crypto/).

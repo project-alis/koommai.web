@@ -13,18 +13,32 @@ export function same(a, b) {
   for (let i = 0; i < a.length; i++) difference |= a.charCodeAt(i) ^ b.charCodeAt(i);
   return difference === 0;
 }
+export const MIN_PASSWORD_ITERATIONS = 600000;
+export const MAX_PASSWORD_ITERATIONS = 2000000;
+function validIterations(value) {
+  return Number.isSafeInteger(value) && value >= MIN_PASSWORD_ITERATIONS && value <= MAX_PASSWORD_ITERATIONS;
+}
+function parsePasswordHash(encoded) {
+  if (typeof encoded !== 'string') return null;
+  const match = /^pbkdf2-sha256\$([1-9][0-9]{5,6})\$([a-f0-9]{32})\$([a-f0-9]{64})$/.exec(encoded);
+  if (!match || !validIterations(Number(match[1]))) return null;
+  return { iterations:Number(match[1]), salt:match[2] };
+}
 export function configured(env) {
   return typeof env.SESSION_SECRET === 'string' && enc.encode(env.SESSION_SECRET).length >= 32 &&
-    /^pbkdf2-sha256\$100000\$[a-f0-9]{32}\$[a-f0-9]{64}$/.test(env.ADMIN_PASSWORD_HASH || '');
+    parsePasswordHash(env.ADMIN_PASSWORD_HASH) !== null;
 }
-export async function passwordHash(password, salt = hex(crypto.getRandomValues(new Uint8Array(16)))) {
+export async function passwordHash(password, salt = hex(crypto.getRandomValues(new Uint8Array(16))), iterations = MIN_PASSWORD_ITERATIONS) {
+  if (!validIterations(iterations) || !/^[a-f0-9]{32}$/.test(salt) ||
+      typeof password !== 'string' || password.length > 1024) throw new TypeError('Invalid password hash parameters');
   const key = await crypto.subtle.importKey('raw', enc.encode(password), 'PBKDF2', false, ['deriveBits']);
-  const derived = await crypto.subtle.deriveBits({ name:'PBKDF2', salt:unhex(salt), iterations:100000, hash:'SHA-256' }, key, 256);
-  return 'pbkdf2-sha256$100000$' + salt + '$' + hex(derived);
+  const derived = await crypto.subtle.deriveBits({ name:'PBKDF2', salt:unhex(salt), iterations, hash:'SHA-256' }, key, 256);
+  return 'pbkdf2-sha256$' + iterations + '$' + salt + '$' + hex(derived);
 }
 export async function verifyPassword(password, encoded) {
-  if (typeof password !== 'string' || password.length > 1024) return false;
-  return same(await passwordHash(password, encoded.split('$')[2]), encoded);
+  const parsed = parsePasswordHash(encoded);
+  if (!parsed || typeof password !== 'string' || password.length > 1024) return false;
+  return same(await passwordHash(password, parsed.salt, parsed.iterations), encoded);
 }
 async function signingKey(env) {
   return crypto.subtle.importKey('raw', enc.encode(env.SESSION_SECRET), { name:'HMAC', hash:'SHA-256' }, false, ['sign','verify']);

@@ -1,7 +1,8 @@
 import readline from 'node:readline/promises';
 import { Writable } from 'node:stream';
-import { passwordHash } from '../worker/admin-auth.js';
+import { passwordHash, MIN_PASSWORD_ITERATIONS } from '../worker/admin-auth.js';
 if(!process.stdin.isTTY)throw new Error('Run this command in an interactive terminal.');
+process.stdout.write('PBKDF2-HMAC-SHA256: ' + MIN_PASSWORD_ITERATIONS + ' iterations\n');
 const muted=new Writable({write(_chunk,_encoding,callback){callback();}});
 const input=readline.createInterface({input:process.stdin,output:muted,terminal:true});
 try{
